@@ -1,8 +1,8 @@
 import type { ImageMetadata } from 'astro';
-import bcombsImage from '../assets/images/bcombs.webp';
-import boardspeakImage from '../assets/images/boardspeak.webp';
-import nestaraImage from '../assets/images/nestara.webp';
-import nextpointImage from '../assets/images/nextpoint.webp';
+import openwalletImage from '../assets/images/openwallet.png';
+import growticsImage from '../assets/images/growtrics.png';
+import dtaLuxuryImage from '../assets/images/dta-luxury.png';
+import khatraImage from '../assets/images/khatra.png';
 
 export type Project = {
 	name: string;
@@ -20,51 +20,51 @@ export const workPageSize = 10;
 
 export const projects: Project[] = [
 	{
-		name: 'Nextpoint',
-		title: 'Making legal transcripts easier to scan, summarize, and act on with AI',
+		name: 'OpenWallet',
+		title: 'Vietnamese credit card comparison platform with AI chat that uses real data',
 		description:
-			'A transcript workflow rethought for faster review, clearer patterns, and less manual synthesis under pressure.',
+			'Intent-based ranking engine, 300+ card database, AI chat via MCP server (13 tools, no hallucinated data), Langfuse eval harness, 500+ Vitest test cases. Built solo.',
 		background: 'lime',
 		variant: 'desktop',
-		href: '/work/nextpoint',
-		image: nextpointImage,
-		alt: 'Nextpoint dashboard preview showing transcript and summary metrics',
+		href: '/work/openwallet',
+		image: openwalletImage,
+		alt: 'OpenWallet app preview showing personal finance dashboard',
 		imageClass: 'project-preview-image',
 	},
 	{
-		name: 'b.combs',
-		title: 'A CRM designed around people, relationships, and the work behind the data',
+		name: 'Growtrics',
+		title: 'Making learning data feel actionable for educators and learners alike',
 		description:
-			'A more humane CRM experience for teams balancing operational detail with relationship-driven work.',
+			'An EdTech platform redesign focused on surfacing the right signals for teachers and students in Singapore.',
 		background: 'cyan',
 		variant: 'split',
-		href: '/work/nextpoint',
-		image: bcombsImage,
-		alt: 'b.combs CRM preview showing nonprofit workflow screens',
+		href: '/work/growtrics',
+		image: growticsImage,
+		alt: 'Growtrics dashboard preview showing learning analytics',
 		imageClass: 'project-preview-image',
 	},
 	{
-		name: 'Nestara',
-		title: 'Helping first-time buyers feel guided through a high-stress life decision',
+		name: 'DTA Luxury',
+		title: 'A digital presence built for high-end travel experiences in Australia',
 		description:
-			'A mobile-first experience focused on reassurance, next-step clarity, and decision confidence.',
+			'Brand-aligned web design for a luxury travel agency — where visual refinement and booking confidence matter equally.',
 		background: 'lavender',
-		variant: 'mobile',
-		href: '/work/nextpoint',
-		image: nestaraImage,
-		alt: 'Nestara mobile app preview showing real estate product screens',
+		variant: 'desktop',
+		href: '/work/dta-luxury',
+		image: dtaLuxuryImage,
+		alt: 'DTA Luxury website preview showing travel and tourism design',
 		imageClass: 'project-preview-image',
 	},
 	{
-		name: 'BoardSpeak',
-		title: 'Turning community participation into a clearer and more sustainable growth loop',
+		name: 'Khatra',
+		title: 'Translating interior design craftsmanship into a considered digital identity',
 		description:
-			'A civic product concept that makes participation feel rewarding, visible, and easier to sustain over time.',
+			'A web presence for a Vietnamese interior design studio — balancing portfolio presentation with brand personality.',
 		background: 'mint',
-		variant: 'board',
-		href: '/work/nextpoint',
-		image: boardspeakImage,
-		alt: 'BoardSpeak web app preview showing rewards and community interface',
+		variant: 'desktop',
+		href: '/work/khatra',
+		image: khatraImage,
+		alt: 'Khatra interior design studio website preview',
 		imageClass: 'project-preview-image',
 	},
 ];
