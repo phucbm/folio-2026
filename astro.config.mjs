@@ -3,6 +3,9 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import node from '@astrojs/node';
+import tina from '@tinacms/astro/integration';
+import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import { siteConfig } from './src/config/site.ts';
 
 const usingFallbackSiteUrl =
@@ -19,7 +22,10 @@ if (usingFallbackSiteUrl) {
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.siteUrl,
+	output: 'server',
+	adapter: node({ mode: 'standalone' }),
 	integrations: [
+		tina(),
 		mdx(),
 		sitemap({
 			filter(page) {
@@ -29,6 +35,6 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [tailwindcss(), tinaAdminDevRedirect()],
 	},
 });

@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import { getAbout } from '../lib/content';
+
+const about = getAbout();
 ---
 
 <Layout
@@ -17,64 +20,24 @@ import SiteHeader from '../components/SiteHeader.astro';
 				<p class="eyebrow">About</p>
 				<div class="hero-layout">
 					<div class="hero-copy">
-						<h1 class="display-title">I'm Phuc. Frontend engineer based in Ho Chi Minh City.</h1>
-						<p class="hero-text">
-							Frontend engineer running Perxel Studio and building OpenWallet independently.
-							Open to hybrid or remote.
-						</p>
+						<h1 class="display-title">{about.heroTitle}</h1>
+						<p class="hero-text">{about.heroText}</p>
 					</div>
 				</div>
 			</section>
 
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Background</p>
-				</div>
-				<div class="story-block">
-					<p>
-						Grew from developer to leading a team. 300+ production sites across enterprise,
-						education, hospitality, and real estate — WordPress, Next.js, custom JS libraries.
-					</p>
-					<p>
-						Now running Perxel Studio — delivering production websites for international clients on
-						WordPress and Next.js — and building OpenWallet independently: AI chat with MCP server,
-						intent-based ranking, LLM eval harness.
-					</p>
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">How I Work</p>
-				</div>
-				<div class="story-block">
-					<p>
-						Pixel-perfect UI matters. Good developer experience in open-source matters.
-						I keep up with how AI is changing the way we build — and apply it where it makes sense.
-					</p>
-					<p>
-						My open-source work is production-tested — built for real projects, then extracted and
-						published. If I ship it, I've run it in production first.
-					</p>
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Focus</p>
-				</div>
-				<div class="story-block">
-					<p>
-						Frontend engineering and AI integration. Building production web products with
-						WordPress, Next.js, and TypeScript — and wiring real AI into them via MCP,
-						Claude API, and Langfuse eval harnesses.
-					</p>
-					<p>
-						Also active in open source: custom JS libraries published to npm, used across
-						300+ client projects and counting.
-					</p>
-				</div>
-			</section>
+			{about.sections?.map((section) => (
+				<section class="editorial-section">
+					<div class="section-rail">
+						<p class="section-kicker">{section.kicker}</p>
+					</div>
+					<div class="story-block">
+						{section.body.split('\n\n').filter(Boolean).map((para: string) => (
+							<p>{para.trim()}</p>
+						))}
+					</div>
+				</section>
+			))}
 		</main>
 	</div>
 </Layout>

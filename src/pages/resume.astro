@@ -1,19 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import { getResume } from '../lib/content';
 
-const stack = [
-	'HTML5 / CSS3 / Vanilla JS', 'TypeScript', 'React', 'Next.js',
-	'WordPress / Gutenberg', 'Tailwind CSS', 'CSS Animation',
-	'MCP / Claude API', 'OpenRouter', 'Langfuse',
-	'Vite', 'Vitest', 'GitHub Actions', 'Vercel',
-];
-
-const clients = [
-	'REE Corp', 'Long An International Port', 'RMIT Vietnam',
-	'Sky Preschool', 'Tam Coc Garden', 'Mia Nha Trang', 'The Deck Saigon',
-	'Growtrics', 'DMD by Sun Group', 'Koru Education',
-];
+const resume = getResume();
 ---
 
 <Layout
@@ -28,11 +18,9 @@ const clients = [
 		<main id="main-content">
 			<section class="hero">
 				<p class="eyebrow">Resume</p>
-				<h1 class="display-title">Frontend engineer. Production websites, open-source libraries, AI integration.</h1>
+				<h1 class="display-title">{resume.heroTitle}</h1>
 				<div class="hero-subgrid">
-					<p class="hero-text">
-						Shipped 300+ production sites. Now building AI tools.
-					</p>
+					<p class="hero-text">{resume.heroText}</p>
 				</div>
 			</section>
 
@@ -41,10 +29,10 @@ const clients = [
 					<p class="section-kicker">Snapshot</p>
 				</div>
 				<div class="story-block">
-					<p><strong>Location:</strong> Ho Chi Minh City, Vietnam</p>
-					<p><strong>Focus:</strong> Frontend Engineering / AI Integration</p>
-					<p><strong>Availability:</strong> Open to hybrid or remote</p>
-					<p><strong>Contact:</strong> <a href="mailto:phucbm.dev@gmail.com">phucbm.dev@gmail.com</a></p>
+					<p><strong>Location:</strong> {resume.location}</p>
+					<p><strong>Focus:</strong> {resume.focus}</p>
+					<p><strong>Availability:</strong> {resume.availability}</p>
+					<p><strong>Contact:</strong> <a href={`mailto:${resume.contact}`}>{resume.contact}</a></p>
 				</div>
 			</section>
 
@@ -53,20 +41,15 @@ const clients = [
 					<p class="section-kicker">Experience</p>
 				</div>
 				<div class="story-block">
-					<p>
-						<strong>Frontend Engineer — Perxel Studio</strong><br />
-						Apr 2022 – Present
-					</p>
-					<p>
-						Built production websites for international clients — Growtrics.ai (Singapore EdTech), DMD by Sun Group — on WordPress and Next.js. Owns full delivery end to end: architecture, performance, cross-browser QA, and Vercel deployment.
-					</p>
-					<p>
-						<strong>Lead Frontend Engineer — ViiVue</strong><br />
-						Sep 2017 – May 2025
-					</p>
-					<p>
-						Delivered 300+ production websites across enterprise, education, and hospitality. Proposed and led jQuery-to-vanilla-JS migration; built the custom component libraries that replaced it. Introduced atomic-css, an in-house utility system adopted across all projects. Led a 5+ person team: CI/CD migration to GitHub Actions, code review standards, internal documentation.
-					</p>
+					{resume.experience?.map((exp) => (
+						<>
+							<p>
+								<strong>{exp.role} — {exp.company}</strong><br />
+								{exp.dates}
+							</p>
+							<p>{exp.body}</p>
+						</>
+					))}
 				</div>
 			</section>
 
@@ -75,7 +58,7 @@ const clients = [
 					<p class="section-kicker">Stack</p>
 				</div>
 				<div class="tags-grid">
-					{stack.map((item) => (
+					{resume.stack?.map((item) => (
 						<span class="tag">{item}</span>
 					))}
 				</div>
@@ -86,7 +69,7 @@ const clients = [
 					<p class="section-kicker">Clients</p>
 				</div>
 				<div class="tags-grid">
-					{clients.map((item) => (
+					{resume.clients?.map((item) => (
 						<span class="tag">{item}</span>
 					))}
 				</div>

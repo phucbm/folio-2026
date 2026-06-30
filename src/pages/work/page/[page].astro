@@ -1,10 +1,13 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
-import { projects, workPageSize } from '../../../data/projects';
+import { getProjects } from '../../../lib/content';
+
+export const prerender = true;
 
 export function getStaticPaths() {
+	const workPageSize = 6;
+	const projects = getProjects();
 	const totalPages = Math.ceil(projects.length / workPageSize);
 
 	return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
@@ -55,22 +58,20 @@ const { page, totalPages, visibleProjects } = Astro.props;
 								<p class="work-description">{project.description}</p>
 
 								<div class="actions">
-									<a href={project.href}>
+									<a href={`/work/${project.slug}`}>
 										<span>View case study</span>
 										<span aria-hidden="true">-&gt;</span>
 									</a>
 								</div>
 							</div>
 
-							<a class="work-visual" href={project.href}>
-								<Image
+							<a class="work-visual" href={`/work/${project.slug}`}>
+								<img
 									class={project.imageClass}
 									src={project.image}
 									alt={project.alt}
 									loading="lazy"
 									decoding="async"
-									widths={[640, 960, 1280]}
-									sizes="(max-width: 860px) 100vw, 55vw"
 								/>
 							</a>
 						</article>

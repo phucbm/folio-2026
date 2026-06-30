@@ -1,17 +1,28 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import { siteConfig } from '../../config/site';
-import growticsImage from '../../assets/images/growtrics.png';
+import { getProjects } from '../../lib/content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+	const projects = getProjects();
+	return projects.map((project) => ({
+		params: { slug: project.slug },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props;
 
 const highlights = [
-	{ label: 'Client', value: 'Growtrics' },
-	{ label: 'Industry', value: 'EdTech' },
-	{ label: 'Region', value: '🇸🇬 Singapore' },
-];
+	{ label: 'Client', value: project.metaClient },
+	{ label: 'Industry', value: project.metaIndustry },
+	{ label: 'Region', value: project.metaRegion },
+].filter((h) => h.value);
 
-const caseStudyUrl = new URL('/work/growtrics', siteConfig.siteUrl).toString();
+const caseStudyUrl = new URL(`/work/${project.slug}`, siteConfig.siteUrl).toString();
 const caseStudySchema = [
 	{
 		'@context': 'https://schema.org',
@@ -19,13 +30,13 @@ const caseStudySchema = [
 		itemListElement: [
 			{ '@type': 'ListItem', position: 1, name: 'Home', item: siteConfig.siteUrl },
 			{ '@type': 'ListItem', position: 2, name: 'Work', item: new URL('/work', siteConfig.siteUrl).toString() },
-			{ '@type': 'ListItem', position: 3, name: 'Growtrics Case Study', item: caseStudyUrl },
+			{ '@type': 'ListItem', position: 3, name: `${project.name} Case Study`, item: caseStudyUrl },
 		],
 	},
 	{
 		'@context': 'https://schema.org',
 		'@type': 'CreativeWork',
-		name: 'Growtrics Case Study',
+		name: `${project.name} Case Study`,
 		url: caseStudyUrl,
 		author: { '@type': 'Person', name: siteConfig.authorName },
 		isPartOf: { '@type': 'WebSite', name: siteConfig.name, url: siteConfig.siteUrl },
@@ -35,8 +46,8 @@ const caseStudySchema = [
 ---
 
 <Layout
-	title="Growtrics Case Study | Phuc Bui"
-	description="Making learning data feel actionable for educators and learners — an EdTech platform redesign for the Singapore market."
+	title={`${project.name} Case Study | ${siteConfig.authorName}`}
+	description={project.caseText ?? project.description}
 	ogType="article"
 	schema={caseStudySchema}
 >
@@ -50,35 +61,36 @@ const caseStudySchema = [
 				<p class="eyebrow">
 					<a class="breadcrumb-link" href="/work">Case Study</a>
 					<span class="breadcrumb-separator" aria-hidden="true">/</span>
-					<span>Growtrics</span>
+					<span>{project.name}</span>
 				</p>
-				<h1 class="display-title">Making learning data feel actionable for educators and learners alike.</h1>
+				<h1 class="display-title">{project.caseTitle ?? project.title}</h1>
 				<div class="hero-subgrid">
-					<p class="hero-text">
-						An EdTech platform redesign focused on surfacing the right signals — helping teachers and students in Singapore act on what the data is actually telling them.
-					</p>
+					<p class="hero-text">{project.caseText ?? project.description}</p>
 				</div>
 			</section>
 
-			<section class="meta-strip" id="overview">
-				{highlights.map((item) => (
-					<div class="meta-item">
-						<p class="meta-label">{item.label}</p>
-						<p class="meta-value">{item.value}</p>
-					</div>
-				))}
-			</section>
+			{highlights.length > 0 && (
+				<section class="meta-strip" id="overview">
+					{highlights.map((item) => (
+						<div class="meta-item">
+							<p class="meta-label">{item.label}</p>
+							<p class="meta-value">{item.value}</p>
+						</div>
+					))}
+				</section>
+			)}
 
-			<section class="lead-image-section">
-				<Image
-					class="lead-image"
-					src={growticsImage}
-					alt="Growtrics EdTech platform dashboard showing learning analytics"
-					decoding="async"
-					widths={[720, 1080, 1440]}
-					sizes="(max-width: 78rem) 100vw, 78rem"
-				/>
-			</section>
+			{project.image && (
+				<section class="lead-image-section">
+					<img
+						class="lead-image"
+						src={project.image}
+						alt={project.alt ?? project.name}
+						decoding="async"
+						loading="eager"
+					/>
+				</section>
+			)}
 
 			<section class="updating-section">
 				<p class="updating-label">Case study updating</p>
