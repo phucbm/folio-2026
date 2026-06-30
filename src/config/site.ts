@@ -20,36 +20,38 @@ export type SiteConfig = {
 	socialLinks: SiteLink[];
 };
 
-const defaultSiteUrl = 'https://maria-lake.vercel.app';
+const defaultSiteUrl = 'https://phucbm.com';
 const envSiteUrl = process.env.SITE_URL ?? process.env.PUBLIC_SITE_URL;
 const normalizedSiteUrl = (envSiteUrl || defaultSiteUrl).replace(/\/+$/, '');
 
 export const siteConfig: SiteConfig = {
-	name: 'Maria',
-	title: 'Maria | Astro Theme for UI/UX Designer Portfolios',
+	name: 'Phuc Bui',
+	title: 'Phuc Bui — AI Engineer & Frontend Developer',
 	description:
-		'A clean Astro theme for UI/UX designer portfolios, case studies, and modern product design presentations.',
+		'Phuc Bui — AI Engineer and Frontend Developer. Running Perxel, a web studio building motion-rich, AI-informed websites.',
 	// Set SITE_URL or PUBLIC_SITE_URL to keep canonicals, robots.txt, and the sitemap aligned in each environment.
 	siteUrl: normalizedSiteUrl,
-	email: 'hello@maria.com',
+	email: 'phucbm.dev@gmail.com',
 	locale: 'en-US',
-	authorName: 'Maria',
-	authorRole: 'UX Designer',
+	authorName: 'Phuc Bui',
+	authorRole: 'AI Engineer & Frontend Developer',
 	keywords: [
-		'Astro UI UX portfolio theme',
-		'UI UX designer portfolio template',
-		'Astro portfolio template',
-		'product designer portfolio theme',
-		'case study portfolio theme',
+		'Phuc Bui',
+		'AI engineer',
+		'frontend developer',
+		'web studio',
+		'Perxel',
+		'GSAP',
+		'Next.js',
+		'motion-rich websites',
 	],
-	ogImage: '/og-image.svg',
+	ogImage: '/og-image.png',
 	navLinks: [
 		{ href: '/work', label: 'Work' },
 		{ href: '/about', label: 'About' },
 		{ href: '/resume', label: 'Resume' },
 	],
 	extraPages: [
-		{ href: '/work/nextpoint', label: 'Case Study' },
 		{ href: '/cookies', label: 'Cookies' },
 		{ href: '/privacy', label: 'Privacy' },
 		{ href: '/terms', label: 'Terms' },
@@ -61,7 +63,9 @@ export const siteConfig: SiteConfig = {
 		{ href: '/terms', label: 'Terms' },
 	],
 	socialLinks: [
-		{ href: 'https://www.linkedin.com/', label: 'LinkedIn' },
-		{ href: 'https://dribbble.com/', label: 'Dribbble' },
+		{ href: 'https://github.com/phucbm', label: 'GitHub' },
+		{ href: 'https://x.com/phucbm_', label: 'X' },
+		{ href: 'https://www.linkedin.com/in/phucbm/', label: 'LinkedIn' },
+		{ href: 'https://discord.gg/9UFRcUZtPp', label: 'Discord' },
 	],
 };

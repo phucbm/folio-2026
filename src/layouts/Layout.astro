@@ -78,9 +78,9 @@ const schemaData =
 		<meta name="twitter:image" content={ogImageUrl} />
 		<link
 			rel="preload"
-			href="/fonts/manrope-latin-wght-normal.woff2"
+			href="/fonts/JetBrainsMono[wght].ttf"
 			as="font"
-			type="font/woff2"
+			type="font/ttf"
 			crossorigin
 		/>
 		<title>{title}</title>
@@ -88,7 +88,7 @@ const schemaData =
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)}></script>
 		<script is:inline>
 			(() => {
-				const storageKey = 'maria-theme';
+				const storageKey = 'phucbm-theme';
 				const root = document.documentElement;
 				const storedTheme = localStorage.getItem(storageKey);
 				const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -104,7 +104,7 @@ const schemaData =
 		<script src="/cookie-consent.js" defer></script>
 		<script is:inline>
 			(() => {
-				const storageKey = 'maria-theme';
+				const storageKey = 'phucbm-theme';
 				const root = document.documentElement;
 				const toggle = document.querySelector('[data-theme-toggle]');
 				if (!toggle) {
@@ -143,31 +143,11 @@ const schemaData =
 
 <style is:global>
 	@font-face {
-		font-family: 'Manrope Variable';
+		font-family: 'JetBrains Mono';
 		font-style: normal;
 		font-display: optional;
-		font-weight: 200 800;
-		src: url('/fonts/manrope-latin-wght-normal.woff2') format('woff2-variations');
-		unicode-range:
-			U+0000-00FF,
-			U+0131,
-			U+0152-0153,
-			U+02BB-02BC,
-			U+02C6,
-			U+02DA,
-			U+02DC,
-			U+0304,
-			U+0308,
-			U+0329,
-			U+2000-206F,
-			U+20AC,
-			U+2122,
-			U+2191,
-			U+2193,
-			U+2212,
-			U+2215,
-			U+FEFF,
-			U+FFFD;
+		font-weight: 100 800;
+		src: url('/fonts/JetBrainsMono[wght].ttf') format('truetype');
 	}
 
 	:root {
@@ -188,7 +168,7 @@ const schemaData =
 		--shadow-medium: 0 18px 40px rgba(23, 23, 23, 0.08);
 		--shadow-large: 0 20px 50px rgba(23, 23, 23, 0.08);
 		--icon-filter: none;
-		--font-sans: 'Manrope Variable', 'Inter', 'Segoe UI', sans-serif;
+		--font-sans: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
 		--font-mono:
 			'SFMono-Regular',
 			'SF Mono',
@@ -625,7 +605,10 @@ const schemaData =
 		stroke-linejoin: round;
 	}
 
-	.shared-mobile-panel .shared-mobile-contact-link[aria-label='LinkedIn'] svg {
+	.shared-mobile-panel .shared-mobile-contact-link[aria-label='LinkedIn'] svg,
+	.shared-mobile-panel .shared-mobile-contact-link[aria-label='GitHub'] svg,
+	.shared-mobile-panel .shared-mobile-contact-link[aria-label='X'] svg,
+	.shared-mobile-panel .shared-mobile-contact-link[aria-label='Discord'] svg {
 		fill: currentColor;
 		stroke: none;
 	}
