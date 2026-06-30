@@ -26,15 +26,15 @@ const normalizedSiteUrl = (envSiteUrl || defaultSiteUrl).replace(/\/+$/, '');
 
 export const siteConfig: SiteConfig = {
 	name: 'Phuc Bui',
-	title: 'Phuc Bui — AI Engineer & Frontend Developer',
+	title: 'Phuc Bui — Frontend Engineer',
 	description:
-		'Phuc Bui — AI Engineer and Frontend Developer. Running Perxel, a web studio building motion-rich, AI-informed websites.',
+		'Phuc Bui — Frontend Engineer based in Ho Chi Minh City. Running Perxel Studio, building OpenWallet.',
 	// Set SITE_URL or PUBLIC_SITE_URL to keep canonicals, robots.txt, and the sitemap aligned in each environment.
 	siteUrl: normalizedSiteUrl,
 	email: 'phucbm.dev@gmail.com',
 	locale: 'en-US',
 	authorName: 'Phuc Bui',
-	authorRole: 'AI Engineer & Frontend Developer',
+	authorRole: 'Frontend Engineer',
 	keywords: [
 		'Phuc Bui',
 		'AI engineer',
