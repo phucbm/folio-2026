@@ -23,14 +23,13 @@
   },
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
-    "build": "astro build",
+    "build": "tinacms build && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.1",
-    "@astrojs/node": "^10.1.4",
-    "@astrojs/sitemap": "^3.7.3",
+"@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/manrope": "^5.2.8",
     "@tailwindcss/vite": "^4.3.0",
     "@tinacms/astro": "^0.5.0",

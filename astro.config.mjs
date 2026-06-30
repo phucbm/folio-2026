@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import { siteConfig } from './src/config/site.ts';
@@ -22,8 +21,7 @@ if (usingFallbackSiteUrl) {
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.siteUrl,
-	output: 'server',
-	adapter: node({ mode: 'standalone' }),
+	output: 'static',
 	integrations: [
 		tina(),
 		mdx(),
