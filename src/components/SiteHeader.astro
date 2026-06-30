@@ -1,9 +1,7 @@
 ---
 import { siteConfig } from '../config/site';
 const currentPath = Astro.url.pathname || '/';
-const menuPanelId = 'shared-menu-panel';
 const mobileMenuPanelId = 'shared-mobile-menu-panel';
-const mobileSubmenuPanelId = 'shared-mobile-submenu-panel';
 ---
 
 <header class="shared-header">
@@ -19,25 +17,6 @@ const mobileSubmenuPanelId = 'shared-mobile-submenu-panel';
 				</a>
 			))}
 
-			<div class="shared-menu">
-				<button
-					class="shared-menu-trigger"
-					type="button"
-					aria-haspopup="menu"
-					aria-expanded="false"
-					aria-controls={menuPanelId}
-				>
-					<span>Other</span>
-					<img src="/icons/chevron-down.svg" alt="" width="16" height="16" />
-				</button>
-				<div class="shared-menu-panel" id={menuPanelId} role="menu" aria-label="More navigation pages">
-					{siteConfig.extraPages.map((link) => (
-						<a href={link.href} role="menuitem">
-							{link.label}
-						</a>
-					))}
-				</div>
-			</div>
 		</nav>
 
 		<button
@@ -102,19 +81,6 @@ const mobileSubmenuPanelId = 'shared-mobile-submenu-panel';
 
 				{siteConfig.navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
 
-				<details class="shared-mobile-submenu">
-					<summary
-						class="shared-mobile-submenu-trigger"
-						aria-expanded="false"
-						aria-controls={mobileSubmenuPanelId}
-					>
-						<span>Other</span>
-						<img src="/icons/chevron-down.svg" alt="" width="16" height="16" />
-					</summary>
-					<div class="shared-mobile-submenu-panel" id={mobileSubmenuPanelId}>
-						{siteConfig.extraPages.map((link) => <a href={link.href}>{link.label}</a>)}
-					</div>
-				</details>
 
 				<div class="shared-mobile-contact" aria-label="Contact links">
 					<a class="shared-mobile-contact-link" href={`mailto:${siteConfig.email}`} aria-label={`Email ${siteConfig.email}`}>
@@ -170,33 +136,12 @@ const mobileSubmenuPanelId = 'shared-mobile-submenu-panel';
 
 <script is:inline>
 	(() => {
-		const menu = document.querySelector('.shared-menu');
-		const button = menu?.querySelector('.shared-menu-trigger');
-		if (!menu || !button) return;
-
-		const setExpanded = (value) => {
-			button.setAttribute('aria-expanded', String(value));
-		};
-
-		menu.addEventListener('focusin', () => setExpanded(true));
-		menu.addEventListener('focusout', (event) => {
-			if (!menu.contains(event.relatedTarget)) {
-				setExpanded(false);
-			}
-		});
-		menu.addEventListener('mouseenter', () => setExpanded(true));
-		menu.addEventListener('mouseleave', () => setExpanded(false));
-	})();
-
-	(() => {
 		const mobileMenu = document.querySelector('.shared-nav-mobile');
 		if (!(mobileMenu instanceof HTMLDetailsElement)) return;
 
 		const root = document.documentElement;
 		const toggle = mobileMenu.querySelector('.shared-nav-toggle');
 		const panel = mobileMenu.querySelector('.shared-mobile-panel');
-		const submenu = mobileMenu.querySelector('.shared-mobile-submenu');
-		const submenuToggle = submenu?.querySelector('.shared-mobile-submenu-trigger');
 		const lockClass = 'shared-mobile-menu-open';
 		const focusableSelector = [
 			'a[href]',
@@ -223,9 +168,6 @@ const mobileSubmenuPanelId = 'shared-mobile-submenu-panel';
 			toggle?.setAttribute('aria-expanded', String(mobileMenu.open));
 		};
 
-		submenu?.addEventListener('toggle', () => {
-			submenuToggle?.setAttribute('aria-expanded', String(submenu.open));
-		});
 		mobileMenu.addEventListener('toggle', syncScrollLock);
 		mobileMenu.addEventListener('keydown', (event) => {
 			if (!mobileMenu.open) return;

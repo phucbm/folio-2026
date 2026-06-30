@@ -30,16 +30,6 @@ const currentYear = new Date().getFullYear();
 				}
 			</div>
 			<div class="shared-footer-note">
-				<div class="shared-footer-legal">
-					{siteConfig.legalLinks.map((link) => <a href={link.href}>{link.label}</a>)}
-					<button
-						class="footer-cookie-btn"
-						type="button"
-						onclick="window.dispatchEvent(new CustomEvent('phucbm:openCookieConsent'))"
-					>
-						Cookie Preferences
-					</button>
-				</div>
 				<p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
 			</div>
 		</div>
