@@ -51,7 +51,18 @@ export const siteConfig: SiteConfig = {
 		{ href: '/about', label: 'About' },
 		{ href: '/resume', label: 'Resume' },
 	],
+	// extraPages: [
+	// 	{ href: '/cookies', label: 'Cookies' },
+	// 	{ href: '/privacy', label: 'Privacy' },
+	// 	{ href: '/terms', label: 'Terms' },
+	// 	{ href: '/404', label: '404' },
+	// ],
 	extraPages: [],
+	// legalLinks: [
+	// 	{ href: '/cookies', label: 'Cookies' },
+	// 	{ href: '/privacy', label: 'Privacy' },
+	// 	{ href: '/terms', label: 'Terms' },
+	// ],
 	legalLinks: [],
 	socialLinks: [
 		{ href: 'https://github.com/phucbm', label: 'GitHub' },

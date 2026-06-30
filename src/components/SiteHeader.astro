@@ -17,6 +17,24 @@ const mobileMenuPanelId = 'shared-mobile-menu-panel';
 				</a>
 			))}
 
+			{/* <div class="shared-menu">
+				<button
+					class="shared-menu-trigger"
+					type="button"
+					aria-haspopup="menu"
+					aria-expanded="false"
+				>
+					<span>Other</span>
+					<img src="/icons/chevron-down.svg" alt="" width="16" height="16" />
+				</button>
+				<div class="shared-menu-panel" role="menu" aria-label="More navigation pages">
+					{siteConfig.extraPages.map((link) => (
+						<a href={link.href} role="menuitem">
+							{link.label}
+						</a>
+					))}
+				</div>
+			</div> */}
 		</nav>
 
 		<button
@@ -81,6 +99,15 @@ const mobileMenuPanelId = 'shared-mobile-menu-panel';
 
 				{siteConfig.navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
 
+				{/* <details class="shared-mobile-submenu">
+					<summary class="shared-mobile-submenu-trigger" aria-expanded="false">
+						<span>Other</span>
+						<img src="/icons/chevron-down.svg" alt="" width="16" height="16" />
+					</summary>
+					<div class="shared-mobile-submenu-panel">
+						{siteConfig.extraPages.map((link) => <a href={link.href}>{link.label}</a>)}
+					</div>
+				</details> */}
 
 				<div class="shared-mobile-contact" aria-label="Contact links">
 					<a class="shared-mobile-contact-link" href={`mailto:${siteConfig.email}`} aria-label={`Email ${siteConfig.email}`}>
