@@ -3,30 +3,30 @@ import Layout from '../../layouts/Layout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import { requestWithMetadata } from '@tinacms/astro';
-import WorkIsland from '../../components/islands/WorkIsland.astro';
+import PageIsland from '../../components/islands/PageIsland.astro';
 import client from '../../../tina/__generated__/client';
 
-const [projectsRes, workRes] = await Promise.all([
+const [pageRes, projectsRes] = await Promise.all([
+	requestWithMetadata(client.queries.pages({ relativePath: 'work.md' })),
 	requestWithMetadata(client.queries.projectsConnection()),
-	requestWithMetadata(client.queries.work({ relativePath: 'index.md' })),
 ]);
+const page = pageRes.data.pages;
 const projects = (projectsRes.data.projectsConnection.edges ?? [])
 	.map((e: any) => e!.node!)
 	.sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0));
-const workPage = workRes.data.work;
 ---
 
 <Layout
-	title="Work | Astro Theme for UI/UX Designer Portfolios"
-	description="Work page example from the Maria Astro theme for UI/UX designer portfolios, featuring case study cards and portfolio project layouts."
+	title={page.metaTitle ?? page.title}
+	description={page.metaDescription ?? ''}
 >
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<div class="w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
 		<SiteHeader />
 
-		<TinaIsland name="work" wrapper={{ tag: 'main', className: undefined }} primary>
-			<WorkIsland projects={projects} workPage={workPage} />
+		<TinaIsland name="pages" wrapper={{ tag: 'main', className: undefined }} params={{ relativePath: 'work.md' }} primary>
+			<PageIsland page={page} projects={projects} />
 		</TinaIsland>
 	</div>
 </Layout>

@@ -6,6 +6,102 @@ const branch =
   process.env.HEAD ||
   "main";
 
+// ─── Shared block templates ────────────────────────────────────────────────────
+const heroBlock = {
+  name: "heroBlock",
+  label: "Hero",
+  fields: [
+    { type: "string", name: "eyebrow", label: "Eyebrow (mono label above title)" },
+    { type: "string", name: "title", label: "Title (h1)", ui: { component: "textarea" } },
+    { type: "string", name: "body", label: "Body text", ui: { component: "textarea" } },
+    { type: "string", name: "note", label: "Note (italic line below body)", ui: { component: "textarea" } },
+  ],
+};
+
+const editorialBlock = {
+  name: "editorialBlock",
+  label: "Editorial",
+  fields: [
+    { type: "string", name: "kicker", label: "Kicker (left column label)" },
+    { type: "rich-text", name: "content", label: "Body" },
+  ],
+};
+
+const snapshotBlock = {
+  name: "snapshotBlock",
+  label: "Snapshot",
+  fields: [
+    { type: "string", name: "location", label: "Location" },
+    { type: "string", name: "focus", label: "Focus" },
+    { type: "string", name: "availability", label: "Availability" },
+    { type: "string", name: "contact", label: "Contact email" },
+  ],
+};
+
+const experienceBlock = {
+  name: "experienceBlock",
+  label: "Experience",
+  fields: [
+    {
+      type: "object",
+      name: "jobs",
+      label: "Jobs",
+      list: true,
+      fields: [
+        { type: "string", name: "role", label: "Role" },
+        { type: "string", name: "company", label: "Company" },
+        { type: "string", name: "dates", label: "Dates" },
+        { type: "string", name: "body", label: "Description", ui: { component: "textarea" } },
+      ],
+    },
+  ],
+};
+
+const pillListBlock = {
+  name: "pillListBlock",
+  label: "Pill List",
+  fields: [
+    { type: "string", name: "label", label: "Section label (e.g. Stack, Clients)" },
+    { type: "string", name: "items", label: "Items", list: true },
+  ],
+};
+
+const projectCardsBlock = {
+  name: "projectCardsBlock",
+  label: "Project Cards",
+  fields: [
+    {
+      type: "string",
+      name: "note",
+      label: "Note (for editors — no rendered output)",
+      ui: { component: "textarea" },
+    },
+  ],
+};
+
+const projectListBlock = {
+  name: "projectListBlock",
+  label: "Project List",
+  fields: [
+    {
+      type: "string",
+      name: "note",
+      label: "Note (for editors — no rendered output)",
+      ui: { component: "textarea" },
+    },
+  ],
+};
+
+const allBlocks = [
+  heroBlock,
+  editorialBlock,
+  snapshotBlock,
+  experienceBlock,
+  pillListBlock,
+  projectCardsBlock,
+  projectListBlock,
+];
+
 export default defineConfig({
   branch,
   clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID,
@@ -25,7 +121,7 @@ export default defineConfig({
 
   schema: {
     collections: [
-      // ─── Site config (single doc) ───────────────────────────────
+      // ─── Site config (single doc) ──────────────────────────────────────────
       {
         name: "siteConfig",
         label: "Site Config",
@@ -68,92 +164,37 @@ export default defineConfig({
         ],
       },
 
-      // ─── Hero (single doc) ──────────────────────────────────────
+      // ─── Pages (multi-doc, blocks-based) ──────────────────────────────────
       {
-        name: "hero",
-        label: "Homepage Hero",
-        path: "content/hero",
+        name: "pages",
+        label: "Pages",
+        path: "content/pages",
         format: "md",
-        match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false }, router: () => "/" },
+        ui: {
+          router: ({ document }: { document: { slug?: string } }) =>
+            document.slug ? `/${document.slug}` : "/",
+          filename: {
+            readonly: false,
+            slugify: (values: Record<string, string>) =>
+              values?.slug?.toLowerCase().replace(/\s+/g, "-") ?? "",
+          },
+        },
         fields: [
-          { type: "string", name: "headline", label: "Headline", ui: { component: "textarea" } },
-          { type: "string", name: "subtext", label: "Subtext", ui: { component: "textarea" } },
-          { type: "string", name: "note", label: "Note (italic line)", ui: { component: "textarea" } },
-        ],
-      },
-
-      // ─── About (single doc) ─────────────────────────────────────
-      {
-        name: "about",
-        label: "About Page",
-        path: "content/about",
-        format: "md",
-        match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false }, router: () => "/about" },
-        fields: [
-          { type: "string", name: "heroTitle", label: "Hero title", ui: { component: "textarea" } },
-          { type: "string", name: "heroText", label: "Hero text", ui: { component: "textarea" } },
+          { type: "string", name: "title", label: "Page title (browser tab)", isTitle: true, required: true },
+          { type: "string", name: "slug", label: "Slug (URL path, empty = homepage)", required: false },
+          { type: "string", name: "metaTitle", label: "Meta title" },
+          { type: "string", name: "metaDescription", label: "Meta description", ui: { component: "textarea" } },
           {
             type: "object",
-            name: "sections",
-            label: "Editorial sections",
+            name: "blocks",
+            label: "Page sections",
             list: true,
-            fields: [
-              { type: "string", name: "kicker", label: "Section kicker" },
-              { type: "string", name: "body", label: "Body", ui: { component: "textarea" } },
-            ],
+            templates: allBlocks,
           },
         ],
       },
 
-      // ─── Resume (single doc) ────────────────────────────────────
-      {
-        name: "resume",
-        label: "Resume Page",
-        path: "content/resume",
-        format: "md",
-        match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false }, router: () => "/resume" },
-        fields: [
-          { type: "string", name: "heroTitle", label: "Hero title", ui: { component: "textarea" } },
-          { type: "string", name: "heroText", label: "Hero text", ui: { component: "textarea" } },
-          { type: "string", name: "location", label: "Location" },
-          { type: "string", name: "focus", label: "Focus" },
-          { type: "string", name: "availability", label: "Availability" },
-          { type: "string", name: "contact", label: "Contact email" },
-          {
-            type: "object",
-            name: "experience",
-            label: "Experience",
-            list: true,
-            fields: [
-              { type: "string", name: "role", label: "Role" },
-              { type: "string", name: "company", label: "Company" },
-              { type: "string", name: "dates", label: "Dates" },
-              { type: "string", name: "body", label: "Description", ui: { component: "textarea" } },
-            ],
-          },
-          { type: "string", name: "stack", label: "Stack", list: true },
-          { type: "string", name: "clients", label: "Clients", list: true },
-        ],
-      },
-
-      // ─── Work page (single doc) ─────────────────────────────────
-      {
-        name: "work",
-        label: "Work Page",
-        path: "content/work",
-        format: "md",
-        match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false }, router: () => "/work" },
-        fields: [
-          { type: "string", name: "eyebrow", label: "Eyebrow label" },
-          { type: "string", name: "headline", label: "Headline", ui: { component: "textarea" } },
-        ],
-      },
-
-      // ─── Projects (list) ────────────────────────────────────────
+      // ─── Projects (list) ──────────────────────────────────────────────────
       {
         name: "projects",
         label: "Work Projects",
@@ -179,13 +220,18 @@ export default defineConfig({
           { type: "image", name: "image", label: "Project image" },
           { type: "string", name: "alt", label: "Image alt text" },
           { type: "string", name: "imageClass", label: "Image CSS class" },
-          { type: "string", name: "caseTitle", label: "Case study headline", ui: { component: "textarea" } },
-          { type: "string", name: "caseText", label: "Case study subtext", ui: { component: "textarea" } },
           { type: "string", name: "metaClient", label: "Meta: Client" },
           { type: "string", name: "metaIndustry", label: "Meta: Industry" },
           { type: "string", name: "metaRegion", label: "Meta: Region" },
           { type: "number", name: "order", label: "Display order" },
-          { type: "rich-text", name: "body", label: "Case study content (optional)", isBody: true },
+          {
+            type: "object",
+            name: "blocks",
+            label: "Detail page sections",
+            list: true,
+            templates: allBlocks,
+          },
+          { type: "rich-text", name: "body", label: "Legacy content (deprecated)", isBody: true },
         ],
         ui: {
           router: ({ document }: { document: { slug?: string } }) =>

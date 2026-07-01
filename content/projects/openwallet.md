@@ -8,11 +8,14 @@ variant: desktop
 image: /images/projects/openwallet.png
 alt: OpenWallet app preview showing personal finance dashboard
 imageClass: project-preview-image
-caseTitle: A personal finance app built for how people actually think about money.
-caseText: 'Designing clarity and trust into a fintech product for the Vietnamese market — balancing habit, daily decisions, and financial confidence.'
 metaClient: OpenWallet
 metaIndustry: Fintech / Personal Finance
 metaRegion: "\U0001F1FB\U0001F1F3 Vietnam"
 order: 1
+blocks:
+  - _template: heroBlock
+    eyebrow: ""
+    title: A personal finance app built for how people actually think about money.
+    body: "Designing clarity and trust into a fintech product for the Vietnamese market — balancing habit, daily decisions, and financial confidence."
+    note: ""
 ---
-

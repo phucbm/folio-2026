@@ -3,54 +3,35 @@ import type { IslandRegistry } from '@tinacms/astro/experimental';
 import { requestWithMetadata } from '@tinacms/astro';
 import client from '../../tina/__generated__/client';
 
-import HomeIsland from '../components/islands/HomeIsland.astro';
-import AboutIsland from '../components/islands/AboutIsland.astro';
-import ResumeIsland from '../components/islands/ResumeIsland.astro';
-import WorkIsland from '../components/islands/WorkIsland.astro';
+import PageIsland from '../components/islands/PageIsland.astro';
 import ProjectIsland from '../components/islands/ProjectIsland.astro';
 import FooterIsland from '../components/islands/FooterIsland.astro';
 
 export const islands: IslandRegistry = {
-	home: {
-		fetch: async (_request, _params) => {
-			const [heroRes, projectsRes] = await Promise.all([
-				requestWithMetadata(client.queries.hero({ relativePath: 'index.md' })),
-				requestWithMetadata(client.queries.projectsConnection()),
-			]);
-			return {
-				data: { hero: heroRes.data?.hero, projectsConnection: projectsRes.data?.projectsConnection },
-				errors: heroRes.errors ?? projectsRes.errors,
-				query: '',
-				variables: {},
-			};
+	pages: {
+		fetch: async (_request, params) => {
+			const relativePath = params.get('relativePath') ?? '';
+			const needsProjects = ['home.md', 'work.md'].includes(relativePath);
+			if (needsProjects) {
+				const [pageRes, projectsRes] = await Promise.all([
+					requestWithMetadata(client.queries.pages({ relativePath })),
+					requestWithMetadata(client.queries.projectsConnection()),
+				]);
+				return {
+					data: { pages: pageRes.data?.pages, projectsConnection: projectsRes.data?.projectsConnection },
+					errors: pageRes.errors ?? projectsRes.errors,
+					query: '',
+					variables: {},
+				};
+			}
+			return requestWithMetadata(client.queries.pages({ relativePath }));
 		},
-		component: HomeIsland,
+		component: PageIsland,
 		wrapper: { tag: 'main' },
 		propsFromData: (data: any) => ({
-			hero: data.data?.hero,
+			page: data.data?.pages,
 			projects: data.data?.projectsConnection?.edges?.map((e: any) => e?.node) ?? [],
 		}),
-	},
-	about: {
-		fetch: (_request, _params) =>
-			requestWithMetadata(client.queries.about({ relativePath: 'index.md' })),
-		component: AboutIsland,
-		wrapper: { tag: 'main' },
-		propsFromData: (data: any) => ({ about: data.data?.about }),
-	},
-	resume: {
-		fetch: (_request, _params) =>
-			requestWithMetadata(client.queries.resume({ relativePath: 'index.md' })),
-		component: ResumeIsland,
-		wrapper: { tag: 'main' },
-		propsFromData: (data: any) => ({ resume: data.data?.resume }),
-	},
-	work: {
-		fetch: (_request, _params) =>
-			requestWithMetadata(client.queries.projectsConnection()),
-		component: WorkIsland,
-		wrapper: { tag: 'main', className: 'works-main' },
-		propsFromData: (data: any) => ({ projects: data.data?.projectsConnection?.edges?.map((e: any) => e?.node) ?? [] }),
 	},
 	project: {
 		fetch: (_request, params) =>

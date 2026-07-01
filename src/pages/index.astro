@@ -3,29 +3,30 @@ import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import { requestWithMetadata } from '@tinacms/astro';
-import HomeIsland from '../components/islands/HomeIsland.astro';
+import PageIsland from '../components/islands/PageIsland.astro';
 import client from '../../tina/__generated__/client';
 
-const heroRes = await requestWithMetadata(client.queries.hero({ relativePath: 'index.md' }));
-const hero = heroRes.data.hero;
-
-const projectsRes = await requestWithMetadata(client.queries.projectsConnection());
+const [pageRes, projectsRes] = await Promise.all([
+	requestWithMetadata(client.queries.pages({ relativePath: 'home.md' })),
+	requestWithMetadata(client.queries.projectsConnection()),
+]);
+const page = pageRes.data.pages;
 const projects = (projectsRes.data.projectsConnection.edges ?? [])
 	.map((e: any) => e!.node!)
 	.sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0));
 ---
 
 <Layout
-	title="Phuc Bui — Frontend Engineer"
-	description="Phuc Bui — Frontend Engineer based in Ho Chi Minh City. Running Perxel Studio, building OpenWallet."
+	title={page.metaTitle ?? page.title}
+	description={page.metaDescription ?? ''}
 >
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<div class="relative w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
 		<SiteHeader />
 
-		<TinaIsland name="home" wrapper={{ tag: 'main', className: undefined }} primary>
-			<HomeIsland hero={hero} projects={projects} />
+		<TinaIsland name="pages" wrapper={{ tag: 'main', className: undefined }} params={{ relativePath: 'home.md' }} primary>
+			<PageIsland page={page} projects={projects} />
 		</TinaIsland>
 	</div>
 </Layout>

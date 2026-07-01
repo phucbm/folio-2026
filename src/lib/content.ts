@@ -25,36 +25,6 @@ export function getSiteConfig() {
   };
 }
 
-export function getHero() {
-  return readFrontmatter("content/hero/index.md") as {
-    headline: string;
-    subtext: string;
-    note: string;
-  };
-}
-
-export function getAbout() {
-  return readFrontmatter("content/about/index.md") as {
-    heroTitle: string;
-    heroText: string;
-    sections: { kicker: string; body: string }[];
-  };
-}
-
-export function getResume() {
-  return readFrontmatter("content/resume/index.md") as {
-    heroTitle: string;
-    heroText: string;
-    location: string;
-    focus: string;
-    availability: string;
-    contact: string;
-    experience: { role: string; company: string; dates: string; body: string }[];
-    stack: string[];
-    clients: string[];
-  };
-}
-
 export function getProjects() {
   const dir = join(process.cwd(), "content/projects");
   const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
@@ -69,12 +39,11 @@ export function getProjects() {
       image: string;
       alt: string;
       imageClass: string;
-      caseTitle: string;
-      caseText: string;
       metaClient: string;
       metaIndustry: string;
       metaRegion: string;
       order: number;
+      blocks: unknown[];
     }
   );
   return projects.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));

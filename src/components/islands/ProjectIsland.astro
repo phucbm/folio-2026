@@ -1,5 +1,6 @@
 ---
 import { tinaField } from '@tinacms/astro';
+import PageIsland from './PageIsland.astro';
 
 interface Props {
 	project: any;
@@ -25,13 +26,6 @@ const highlights = [
 		<span class="text-[var(--muted-foreground)]" aria-hidden="true">/</span>
 		<span>{project.name}</span>
 	</p>
-	<h1 class="display-title" data-tina-field={tinaField(project, 'caseTitle')}>{project.caseTitle ?? project.title}</h1>
-	<div class="grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] gap-8 mt-7 max-[980px]:grid-cols-1">
-		<p
-			class="text-[1.08rem] leading-[1.7] m-0 max-[720px]:text-[1.05rem]"
-			data-tina-field={tinaField(project, 'caseText')}
-		>{project.caseText ?? project.description}</p>
-	</div>
 </section>
 
 {highlights.length > 0 && (
@@ -57,7 +51,12 @@ const highlights = [
 	</section>
 )}
 
-<section class="pt-12 pb-8 border-t border-[var(--border)]">
-	<p class="m-0 mb-3 font-mono text-[0.82rem] font-semibold tracking-[0.08em] uppercase text-[var(--muted-foreground)]">Case study updating</p>
-	<p class="m-0 text-[1.08rem] leading-[1.7] text-[var(--muted-foreground)] max-w-[42rem]">Full case study content coming soon. Check back shortly for the complete breakdown of process, design decisions, and outcomes.</p>
-</section>
+{project.blocks?.length > 0
+	? <PageIsland page={project} />
+	: (
+		<section class="pt-12 pb-8 border-t border-[var(--border)]">
+			<p class="m-0 mb-3 font-mono text-[0.82rem] font-semibold tracking-[0.08em] uppercase text-[var(--muted-foreground)]">Case study updating</p>
+			<p class="m-0 text-[1.08rem] leading-[1.7] text-[var(--muted-foreground)] max-w-[42rem]">Full case study content coming soon. Check back shortly for the complete breakdown of process, design decisions, and outcomes.</p>
+		</section>
+	)
+}

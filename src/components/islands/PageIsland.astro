@@ -1,0 +1,203 @@
+---
+import { tinaField } from '@tinacms/astro';
+import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
+
+interface Props {
+	page: any;
+	projects?: any[];
+}
+
+const { page, projects = [] } = Astro.props;
+
+const sorted = [...projects].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+const bgColors: Record<string, string> = {
+	lime: '#dbff63',
+	cyan: '#91e6ee',
+	lavender: '#c5baf9',
+	mint: '#78f1cf',
+};
+
+const sectionLabel = 'font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic m-0';
+const pill = 'inline-flex items-center px-3 py-[0.35rem] border border-[var(--border)] rounded-full text-[0.9rem] font-medium bg-[var(--card)] text-[var(--foreground)]';
+const bodyText = 'text-[1.08rem] leading-[1.7] m-0 max-[720px]:text-[1.05rem]';
+const twoCol = 'grid grid-cols-[16rem_minmax(0,1fr)] gap-8 py-10 border-t border-[var(--border)] max-[720px]:grid-cols-1';
+---
+
+<span id="main-content" />
+
+{page.blocks?.map((block: any) => {
+	const t = (block.__typename ?? block._template ?? '').toLowerCase();
+
+	// ── heroBlock ────────────────────────────────────────────────────────────
+	if (t?.endsWith('heroblock')) return (
+		<section class="pt-24 pb-16 max-[720px]:pt-16 max-[720px]:pb-12">
+			{block.eyebrow && (
+				<p class={sectionLabel} data-tina-field={tinaField(block, 'eyebrow')}>{block.eyebrow}</p>
+			)}
+			<h1
+				class="display-title mt-4"
+				data-tina-field={tinaField(block, 'title')}
+			>{block.title}</h1>
+			{block.body && (
+				<p
+					class={`max-w-[44rem] mt-6 ${bodyText}`}
+					data-tina-field={tinaField(block, 'body')}
+				>{block.body}</p>
+			)}
+			{block.note && (
+				<p
+					class={`max-w-[40rem] mt-4 ${bodyText} text-[var(--muted-foreground)] italic`}
+					data-tina-field={tinaField(block, 'note')}
+				>{block.note}</p>
+			)}
+		</section>
+	);
+
+	// ── editorialBlock ───────────────────────────────────────────────────────
+	if (t?.endsWith('editorialblock')) return (
+		<section class={twoCol}>
+			<div class="self-start">
+				<p class={sectionLabel} data-tina-field={tinaField(block, 'kicker')}>{block.kicker}</p>
+			</div>
+			<div class="grid gap-4 max-w-[52rem] prose prose-neutral max-w-none" data-tina-field={tinaField(block, 'content')}>
+				<TinaMarkdown content={block.content} />
+			</div>
+		</section>
+	);
+
+	// ── snapshotBlock ────────────────────────────────────────────────────────
+	if (t?.endsWith('snapshotblock')) return (
+		<section class={twoCol}>
+			<div class="self-start"><p class={sectionLabel}>Snapshot</p></div>
+			<div class="grid gap-4 max-w-[52rem]">
+				{block.location && <p class={bodyText} data-tina-field={tinaField(block, 'location')}><strong class="text-[var(--foreground)]">Location:</strong> {block.location}</p>}
+				{block.focus && <p class={bodyText} data-tina-field={tinaField(block, 'focus')}><strong class="text-[var(--foreground)]">Focus:</strong> {block.focus}</p>}
+				{block.availability && <p class={bodyText} data-tina-field={tinaField(block, 'availability')}><strong class="text-[var(--foreground)]">Availability:</strong> {block.availability}</p>}
+				{block.contact && <p class={bodyText} data-tina-field={tinaField(block, 'contact')}><strong class="text-[var(--foreground)]">Contact:</strong> <a href={`mailto:${block.contact}`}>{block.contact}</a></p>}
+			</div>
+		</section>
+	);
+
+	// ── experienceBlock ──────────────────────────────────────────────────────
+	if (t?.endsWith('experienceblock')) return (
+		<section class={twoCol}>
+			<div class="self-start"><p class={sectionLabel}>Experience</p></div>
+			<div class="grid gap-4 max-w-[52rem]">
+				{block.jobs?.map((job: any) => (
+					<>
+						<p class={bodyText} data-tina-field={tinaField(job, 'role')}>
+							<strong class="text-[var(--foreground)]">{job.role} — {job.company}</strong><br />
+							{job.dates}
+						</p>
+						<p class={bodyText} data-tina-field={tinaField(job, 'body')}>{job.body}</p>
+					</>
+				))}
+			</div>
+		</section>
+	);
+
+	// ── pillListBlock ────────────────────────────────────────────────────────
+	if (t?.endsWith('pilllistblock')) return (
+		<section class={twoCol}>
+			<div class="self-start">
+				<p class={sectionLabel} data-tina-field={tinaField(block, 'label')}>{block.label}</p>
+			</div>
+			<div class="flex flex-wrap gap-[0.6rem] max-w-[52rem]" data-tina-field={tinaField(block, 'items')}>
+				{block.items?.map((item: string) => (
+					<span class={pill}>{item}</span>
+				))}
+			</div>
+		</section>
+	);
+
+	// ── projectCardsBlock ────────────────────────────────────────────────────
+	if (t?.endsWith('projectcardsblock')) return (
+		<section id="work">
+			<div class="grid grid-cols-2 gap-8 max-[980px]:grid-cols-1">
+				{sorted.map((project: any, index: number) => (
+					<a
+						class="block text-inherit no-underline hover:text-inherit hover:no-underline visited:text-inherit active:text-inherit focus-visible:outline-offset-[6px]"
+						href={`/work/${project.slug}`}
+					>
+						<article
+							class="grid gap-6 p-6 rounded-[1.35rem] overflow-hidden transition-[transform,box-shadow] duration-[140ms] ease-[ease] hover:-translate-y-1 hover:shadow-[var(--shadow-soft)] max-[720px]:p-5 max-[720px]:rounded-[1.15rem]"
+							style={`background: ${bgColors[project.background] ?? 'var(--muted)'}`}
+						>
+							<div class="flex items-center justify-start">
+								<p
+									class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[rgba(23,23,23,0.72)]"
+									data-tina-field={tinaField(project, 'name')}
+								>{project.name}</p>
+							</div>
+							<h2
+								class="m-0 font-extrabold tracking-[-0.04em] text-[#171717] text-[clamp(1.45rem,1.75vw,1.9rem)] leading-[1.16] [text-wrap:pretty] w-full"
+								data-tina-field={tinaField(project, 'title')}
+							>{project.title}</h2>
+							<div class:list={[
+								'relative h-[17rem] grid items-end justify-items-center overflow-hidden max-[720px]:h-auto max-[720px]:overflow-visible max-[720px]:items-start',
+								project.variant === 'split' && 'grid-cols-[8rem_1fr] gap-4 max-[720px]:grid-cols-[6.5rem_1fr]',
+							]}>
+								<img
+									class:list={[
+										project.imageClass,
+										'w-full h-full object-cover object-top rounded-2xl shadow-[var(--shadow-medium)] max-[720px]:h-auto max-[720px]:object-[initial]',
+										project.variant === 'split' && 'col-span-full',
+									]}
+									src={project.image}
+									alt={project.alt}
+									loading={index < 2 ? 'eager' : 'lazy'}
+									decoding="async"
+								/>
+							</div>
+						</article>
+					</a>
+				))}
+			</div>
+		</section>
+	);
+
+	// ── projectListBlock ─────────────────────────────────────────────────────
+	if (t?.endsWith('projectlistblock')) return (
+		<section class="grid gap-6 mt-12" aria-label="Project list">
+			{sorted.map((project: any) => (
+				<article class="grid grid-cols-[minmax(0,0.9fr)_minmax(22rem,1.1fr)] gap-8 items-start p-6 bg-[var(--card)] border border-[var(--border)] rounded-3xl max-[860px]:grid-cols-1 max-[860px]:gap-5 max-[720px]:p-5">
+					<div class="grid items-start gap-[0.8rem]">
+						<p
+							class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic"
+							data-tina-field={tinaField(project, 'name')}
+						>{project.name}</p>
+						<h2
+							class="m-0 font-extrabold tracking-[-0.05em] text-[var(--foreground)] text-[clamp(1.6rem,2.1vw,2.2rem)] leading-[1.08]"
+							data-tina-field={tinaField(project, 'title')}
+						>{project.title}</h2>
+						<p
+							class="text-[1.05rem] leading-[1.75] text-[var(--muted-foreground)] max-w-[34rem] m-0"
+							data-tina-field={tinaField(project, 'description')}
+						>{project.description}</p>
+						<div class="flex mt-2">
+							<a
+								class="inline-flex items-center justify-center gap-[0.6rem] min-h-[48px] px-[1.1rem] border border-[var(--control-border)] rounded-full text-[1rem] font-bold text-inherit no-underline transition-[transform,border-color,background-color] duration-[120ms] ease-[ease] hover:-translate-y-px hover:bg-[var(--muted)] hover:border-[var(--border-strong)] focus-visible:-translate-y-px focus-visible:bg-[var(--muted)] focus-visible:border-[var(--border-strong)]"
+								href={`/work/${project.slug}`}
+							>
+								<span>View case study</span>
+								<span aria-hidden="true">-&gt;</span>
+							</a>
+						</div>
+					</div>
+					<a class="block p-0 rounded-2xl no-underline self-start" href={`/work/${project.slug}`}>
+						<img
+							class={project.imageClass}
+							src={project.image}
+							alt={project.alt}
+							loading="lazy"
+							decoding="async"
+						/>
+					</a>
+				</article>
+			))}
+		</section>
+	);
+
+	return null;
+})}

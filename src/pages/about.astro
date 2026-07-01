@@ -3,24 +3,24 @@ import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import { requestWithMetadata } from '@tinacms/astro';
-import AboutIsland from '../components/islands/AboutIsland.astro';
+import PageIsland from '../components/islands/PageIsland.astro';
 import client from '../../tina/__generated__/client';
 
-const aboutRes = await requestWithMetadata(client.queries.about({ relativePath: 'index.md' }));
-const about = aboutRes.data.about;
+const pageRes = await requestWithMetadata(client.queries.pages({ relativePath: 'about.md' }));
+const page = pageRes.data.pages;
 ---
 
 <Layout
-	title="About Phuc Bui — AI Engineer & Frontend Developer"
-	description="Phuc Bui — Frontend Engineer based in Ho Chi Minh City. Running Perxel Studio, building OpenWallet."
+	title={page.metaTitle ?? page.title}
+	description={page.metaDescription ?? ''}
 >
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<div class="relative w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
 		<SiteHeader />
 
-		<TinaIsland name="about" wrapper={{ tag: 'main', className: undefined }} primary>
-			<AboutIsland about={about} />
+		<TinaIsland name="pages" wrapper={{ tag: 'main', className: undefined }} params={{ relativePath: 'about.md' }} primary>
+			<PageIsland page={page} />
 		</TinaIsland>
 	</div>
 </Layout>
