@@ -22,7 +22,7 @@ if (usingFallbackSiteUrl) {
 export default defineConfig({
 	site: siteConfig.siteUrl,
 	output: 'server',
-	adapter: cloudflare(),
+	adapter: cloudflare({ imageService: 'passthrough', session: false }),
 	integrations: [
 		tina(),
 		mdx(),

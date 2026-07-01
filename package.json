@@ -23,7 +23,7 @@
   },
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
-    "build": "npx tinacms build && astro build",
+    "build": "npx tinacms build && astro build && node scripts/patch-wrangler.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
