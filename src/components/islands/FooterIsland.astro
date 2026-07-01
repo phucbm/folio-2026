@@ -1,0 +1,40 @@
+---
+import { tinaField } from '@tinacms/astro';
+
+interface Props {
+	site: any;
+	showCta?: boolean;
+}
+
+const { site, showCta = true } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<div class:list={['shared-footer-inner', !showCta && 'shared-footer-inner-no-cta']}>
+	{
+		showCta && (
+			<div class="shared-footer-cta">
+				<h2 data-tina-field={tinaField(site, 'footerCtaHeadline')}>{site.footerCtaHeadline}</h2>
+				<p data-tina-field={tinaField(site, 'footerCtaBody')}>
+					Check my <a class="shared-footer-inline-link" href="/resume">resume</a> or reach out directly if something here sparked an idea.
+				</p>
+				<a href={`mailto:${site.email}`} data-tina-field={tinaField(site, 'email')}>{site.email}</a>
+			</div>
+		)
+	}
+
+	<div class="shared-footer-meta">
+		<div class="shared-footer-links" data-tina-field={tinaField(site, 'socialLinks')}>
+			{
+				site.socialLinks?.map((link: any) => (
+					<a href={link.href} target="_blank" rel="noopener noreferrer" data-tina-field={tinaField(link, 'label')}>
+						{link.label}
+					</a>
+				))
+			}
+		</div>
+		<div class="shared-footer-note">
+			<p data-tina-field={tinaField(site, 'footerCopyright')}>{site.footerCopyright ?? `© ${currentYear} ${site.name}. All rights reserved.`}</p>
+		</div>
+	</div>
+</div>

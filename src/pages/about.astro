@@ -1,9 +1,9 @@
 ---
-
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
-import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import { requestWithMetadata } from '@tinacms/astro';
+import AboutIsland from '../components/islands/AboutIsland.astro';
 import client from '../../tina/__generated__/client';
 
 const aboutRes = await requestWithMetadata(client.queries.about({ relativePath: 'index.md' }));
@@ -16,166 +16,11 @@ const about = aboutRes.data.about;
 >
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
-	<div class="page">
+	<div class="relative w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
 		<SiteHeader />
 
 		<TinaIsland name="about" wrapper={{ tag: 'main', className: undefined }} primary>
-			<span id="main-content" />
-
-			<section class="hero">
-				<p class="eyebrow">About</p>
-				<div class="hero-layout">
-					<div class="hero-copy">
-						<h1 class="display-title" data-tina-field={tinaField(about, 'heroTitle')}>{about.heroTitle}</h1>
-						<p class="hero-text" data-tina-field={tinaField(about, 'heroText')}>{about.heroText}</p>
-					</div>
-				</div>
-			</section>
-
-			{about.sections?.map((section: any) => (
-				<section class="editorial-section">
-					<div class="section-rail">
-						<p class="section-kicker" data-tina-field={tinaField(section, 'kicker')}>{section.kicker}</p>
-					</div>
-					<div class="story-block" data-tina-field={tinaField(section, 'body')}>
-						{section.body.split('\n\n').filter(Boolean).map((para: string) => (
-							<p>{para.trim()}</p>
-						))}
-					</div>
-				</section>
-			))}
+			<AboutIsland about={about} />
 		</TinaIsland>
 	</div>
 </Layout>
-
-<style>
-	.page {
-		position: relative;
-		width: min(calc(100% - 3rem), 78rem);
-		margin: 0 auto;
-		padding: 1.25rem 0 5rem;
-	}
-
-	.eyebrow,
-	.section-kicker {
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		line-height: 1.4;
-		text-transform: uppercase;
-	}
-
-	.hero {
-		padding: 6rem 0 4rem;
-	}
-
-	.hero-layout {
-		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(15rem, 20rem);
-		gap: 2.5rem;
-		align-items: start;
-		margin-top: 1rem;
-	}
-
-	.hero-copy {
-		max-width: 52rem;
-	}
-
-	.eyebrow,
-	.section-kicker {
-		margin: 0;
-		color: var(--muted-foreground);
-		font-style: normal;
-	}
-
-	.hero-text,
-	.story-block p {
-		font-size: 1.08rem;
-		line-height: 1.7;
-		margin: 0;
-	}
-
-	.hero-text {
-		max-width: 44rem;
-		margin-top: 1.5rem;
-	}
-
-	.hero-portrait-wrap {
-		display: flex;
-		justify-content: flex-end;
-		align-self: start;
-		padding-top: 0.35rem;
-	}
-
-	.hero-portrait {
-		width: min(100%, 20rem);
-		height: auto;
-		display: block;
-		border-radius: 1.5rem;
-		box-shadow: 0 18px 40px rgba(23, 23, 23, 0.08);
-	}
-
-	.editorial-section {
-		display: grid;
-		grid-template-columns: 16rem minmax(0, 1fr);
-		gap: 2rem;
-		padding: 2.5rem 0;
-		border-top: 1px solid var(--border);
-	}
-
-	.section-rail {
-		align-self: start;
-	}
-
-	.story-block {
-		display: grid;
-		gap: 1rem;
-		max-width: 52rem;
-	}
-
-	@media (max-width: 1100px) {
-		.hero-layout {
-			grid-template-columns: 1fr;
-			gap: 1.75rem;
-			align-items: start;
-		}
-
-		.hero-copy {
-			max-width: 100%;
-		}
-
-		.hero-text {
-			max-width: 42rem;
-		}
-
-		.hero-portrait-wrap {
-			justify-content: flex-start;
-			padding-top: 0;
-		}
-	}
-
-	@media (max-width: 720px) {
-		.page {
-			width: min(calc(100% - 1.5rem), 78rem);
-			padding-top: 1rem;
-		}
-
-		.hero {
-			padding: 4rem 0 3rem;
-		}
-
-		.editorial-section {
-			grid-template-columns: 1fr;
-		}
-
-		.hero-text,
-		.story-block p {
-			font-size: 1.05rem;
-		}
-
-		.hero-portrait {
-			width: min(100%, 16rem);
-		}
-	}
-</style>

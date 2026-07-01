@@ -1,0 +1,82 @@
+---
+import { tinaField } from '@tinacms/astro';
+
+interface Props {
+	hero: any;
+	projects: any[];
+}
+
+const { hero, projects } = Astro.props;
+const sorted = [...(projects ?? [])].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+const bgColors: Record<string, string> = {
+	lime: '#dbff63',
+	cyan: '#91e6ee',
+	lavender: '#c5baf9',
+	mint: '#78f1cf',
+};
+---
+
+<span id="main-content" />
+
+<section class="pt-[7rem] pb-[6.5rem] max-[720px]:pt-[4rem] max-[720px]:pb-[4.5rem]" id="top">
+	<div class="w-full">
+		<h1 class="display-title" data-tina-field={tinaField(hero, 'headline')}>{hero.headline}</h1>
+		<p
+			class="max-w-[38rem] mt-6 text-[1.2rem] leading-[1.55] max-[720px]:text-[1.05rem]"
+			data-tina-field={tinaField(hero, 'subtext')}
+		>{hero.subtext}</p>
+		<p
+			class="max-w-[40rem] mt-4 text-[1.2rem] leading-[1.55] text-[var(--muted-foreground)] italic max-[720px]:text-[1.05rem]"
+			id="about"
+			data-tina-field={tinaField(hero, 'note')}
+		>{hero.note}</p>
+	</div>
+</section>
+
+<section id="work">
+	<div class="grid grid-cols-2 gap-8 max-[980px]:grid-cols-1">
+		{
+			sorted.map((project: any, index: number) => (
+				<a
+					class="block text-inherit no-underline hover:text-inherit hover:no-underline visited:text-inherit active:text-inherit focus-visible:outline-offset-[6px]"
+					href={`/work/${project.slug}`}
+				>
+					<article
+						class="grid gap-6 p-6 rounded-[1.35rem] overflow-hidden transition-[transform,box-shadow] duration-[140ms] ease-[ease] hover:-translate-y-1 hover:shadow-[var(--shadow-soft)] max-[720px]:p-5 max-[720px]:rounded-[1.15rem]"
+						style={`background: ${bgColors[project.background] ?? 'var(--muted)'}`}
+					>
+						<div class="flex items-center justify-start">
+							<p
+								class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[rgba(23,23,23,0.72)]"
+								data-tina-field={tinaField(project, 'name')}
+							>{project.name}</p>
+						</div>
+
+						<h2
+							class="m-0 font-extrabold tracking-[-0.04em] text-[#171717] text-[clamp(1.45rem,1.75vw,1.9rem)] leading-[1.16] [text-wrap:pretty] w-full"
+							data-tina-field={tinaField(project, 'title')}
+						>{project.title}</h2>
+
+						<div class:list={[
+							'relative h-[17rem] grid items-end justify-items-center overflow-hidden max-[720px]:h-auto max-[720px]:overflow-visible max-[720px]:items-start',
+							project.variant === 'split' && 'grid-cols-[8rem_1fr] gap-4 max-[720px]:grid-cols-[6.5rem_1fr]',
+						]}>
+							<img
+								class:list={[
+									project.imageClass,
+									'w-full h-full object-cover object-top rounded-2xl shadow-[var(--shadow-medium)] max-[720px]:h-auto max-[720px]:object-[initial] max-[720px]:object-[initial]',
+									project.variant === 'split' && 'col-span-full',
+								]}
+								src={project.image}
+								alt={project.alt}
+								loading={index < 2 ? 'eager' : 'lazy'}
+								decoding="async"
+							/>
+						</div>
+					</article>
+				</a>
+			))
+		}
+	</div>
+</section>

@@ -1,0 +1,73 @@
+---
+import { tinaField } from '@tinacms/astro';
+
+interface Props {
+	resume: any;
+}
+
+const { resume } = Astro.props;
+---
+
+<span id="main-content" />
+
+<section class="pt-24 pb-16 max-[720px]:pt-16 max-[720px]:pb-12">
+	<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Resume</p>
+	<h1 class="display-title" data-tina-field={tinaField(resume, 'heroTitle')}>{resume.heroTitle}</h1>
+	<div class="mt-7">
+		<p
+			class="text-[1.08rem] leading-[1.7] m-0 max-[720px]:text-[1.05rem]"
+			data-tina-field={tinaField(resume, 'heroText')}
+		>{resume.heroText}</p>
+	</div>
+</section>
+
+<section class="grid grid-cols-[16rem_minmax(0,1fr)] gap-8 py-10 border-t border-[var(--border)] max-[720px]:grid-cols-1">
+	<div class="self-start">
+		<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Snapshot</p>
+	</div>
+	<div class="grid gap-4 max-w-[52rem]">
+		<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(resume, 'location')}><strong class="text-[var(--foreground)]">Location:</strong> {resume.location}</p>
+		<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(resume, 'focus')}><strong class="text-[var(--foreground)]">Focus:</strong> {resume.focus}</p>
+		<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(resume, 'availability')}><strong class="text-[var(--foreground)]">Availability:</strong> {resume.availability}</p>
+		<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(resume, 'contact')}><strong class="text-[var(--foreground)]">Contact:</strong> <a href={`mailto:${resume.contact}`}>{resume.contact}</a></p>
+	</div>
+</section>
+
+<section class="grid grid-cols-[16rem_minmax(0,1fr)] gap-8 py-10 border-t border-[var(--border)] max-[720px]:grid-cols-1">
+	<div class="self-start">
+		<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Experience</p>
+	</div>
+	<div class="grid gap-4 max-w-[52rem]">
+		{resume.experience?.map((exp: any) => (
+			<>
+				<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(exp, 'role')}>
+					<strong class="text-[var(--foreground)]">{exp.role} — {exp.company}</strong><br />
+					{exp.dates}
+				</p>
+				<p class="text-[1.08rem] leading-[1.7] m-0" data-tina-field={tinaField(exp, 'body')}>{exp.body}</p>
+			</>
+		))}
+	</div>
+</section>
+
+<section class="grid grid-cols-[16rem_minmax(0,1fr)] gap-8 py-10 border-t border-[var(--border)] max-[720px]:grid-cols-1">
+	<div class="self-start">
+		<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Stack</p>
+	</div>
+	<div class="flex flex-wrap gap-[0.6rem] max-w-[52rem]" data-tina-field={tinaField(resume, 'stack')}>
+		{resume.stack?.map((item: string) => (
+			<span class="inline-flex items-center px-3 py-[0.35rem] border border-[var(--border)] rounded-full text-[0.9rem] font-medium bg-[var(--card)] text-[var(--foreground)]">{item}</span>
+		))}
+	</div>
+</section>
+
+<section class="grid grid-cols-[16rem_minmax(0,1fr)] gap-8 py-10 border-t border-[var(--border)] max-[720px]:grid-cols-1">
+	<div class="self-start">
+		<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Clients</p>
+	</div>
+	<div class="flex flex-wrap gap-[0.6rem] max-w-[52rem]" data-tina-field={tinaField(resume, 'clients')}>
+		{resume.clients?.map((item: string) => (
+			<span class="inline-flex items-center px-3 py-[0.35rem] border border-[var(--border)] rounded-full text-[0.9rem] font-medium bg-[var(--card)] text-[var(--foreground)]">{item}</span>
+		))}
+	</div>
+</section>

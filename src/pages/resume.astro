@@ -1,9 +1,9 @@
 ---
-
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
-import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import { requestWithMetadata } from '@tinacms/astro';
+import ResumeIsland from '../components/islands/ResumeIsland.astro';
 import client from '../../tina/__generated__/client';
 
 const resumeRes = await requestWithMetadata(client.queries.resume({ relativePath: 'index.md' }));
@@ -16,184 +16,11 @@ const resume = resumeRes.data.resume;
 >
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
-	<div class="page">
+	<div class="relative w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
 		<SiteHeader />
 
 		<TinaIsland name="resume" wrapper={{ tag: 'main', className: undefined }} primary>
-			<span id="main-content" />
-
-			<section class="hero">
-				<p class="eyebrow">Resume</p>
-				<h1 class="display-title" data-tina-field={tinaField(resume, 'heroTitle')}>{resume.heroTitle}</h1>
-				<div class="hero-subgrid">
-					<p class="hero-text" data-tina-field={tinaField(resume, 'heroText')}>{resume.heroText}</p>
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Snapshot</p>
-				</div>
-				<div class="story-block">
-					<p data-tina-field={tinaField(resume, 'location')}><strong>Location:</strong> {resume.location}</p>
-					<p data-tina-field={tinaField(resume, 'focus')}><strong>Focus:</strong> {resume.focus}</p>
-					<p data-tina-field={tinaField(resume, 'availability')}><strong>Availability:</strong> {resume.availability}</p>
-					<p data-tina-field={tinaField(resume, 'contact')}><strong>Contact:</strong> <a href={`mailto:${resume.contact}`}>{resume.contact}</a></p>
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Experience</p>
-				</div>
-				<div class="story-block">
-					{resume.experience?.map((exp: any) => (
-						<>
-							<p data-tina-field={tinaField(exp, 'role')}>
-								<strong>{exp.role} — {exp.company}</strong><br />
-								{exp.dates}
-							</p>
-							<p data-tina-field={tinaField(exp, 'body')}>{exp.body}</p>
-						</>
-					))}
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Stack</p>
-				</div>
-				<div class="tags-grid" data-tina-field={tinaField(resume, 'stack')}>
-					{resume.stack?.map((item: string) => (
-						<span class="tag">{item}</span>
-					))}
-				</div>
-			</section>
-
-			<section class="editorial-section">
-				<div class="section-rail">
-					<p class="section-kicker">Clients</p>
-				</div>
-				<div class="tags-grid" data-tina-field={tinaField(resume, 'clients')}>
-					{resume.clients?.map((item: string) => (
-						<span class="tag">{item}</span>
-					))}
-				</div>
-			</section>
+			<ResumeIsland resume={resume} />
 		</TinaIsland>
 	</div>
 </Layout>
-
-<style>
-	.page {
-		position: relative;
-		width: min(calc(100% - 3rem), 78rem);
-		margin: 0 auto;
-		padding: 1.25rem 0 5rem;
-	}
-
-	.eyebrow,
-	.section-kicker {
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		line-height: 1.4;
-		text-transform: uppercase;
-	}
-
-	.hero {
-		padding: 6rem 0 4rem;
-	}
-
-	.eyebrow,
-	.section-kicker {
-		margin: 0;
-		color: var(--muted-foreground);
-		font-style: normal;
-	}
-
-	.hero-subgrid {
-		display: grid;
-		grid-template-columns: 1fr;
-		margin-top: 1.75rem;
-	}
-
-	.hero-text,
-	.story-block p {
-		font-size: 1.08rem;
-		line-height: 1.7;
-		margin: 0;
-	}
-
-	.editorial-section {
-		display: grid;
-		grid-template-columns: 16rem minmax(0, 1fr);
-		gap: 2rem;
-		padding: 2.5rem 0;
-		border-top: 1px solid var(--border);
-	}
-
-	.section-rail {
-		align-self: start;
-	}
-
-	.story-block {
-		display: grid;
-		gap: 1rem;
-		max-width: 52rem;
-	}
-
-	.story-block strong {
-		color: var(--foreground);
-	}
-
-	.tags-grid {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-		max-width: 52rem;
-	}
-
-	.tag {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.35rem 0.75rem;
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		font-size: 0.9rem;
-		font-weight: 500;
-		background: var(--card);
-		color: var(--foreground);
-	}
-
-	@media (max-width: 980px) {
-		.hero-subgrid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 720px) {
-		.page {
-			width: min(calc(100% - 1.5rem), 78rem);
-			padding-top: 1rem;
-		}
-
-		.hero {
-			padding: 4rem 0 3rem;
-		}
-
-		.editorial-section {
-			grid-template-columns: 1fr;
-		}
-
-		.hero-text,
-		.story-block p {
-			font-size: 1.05rem;
-		}
-
-		.tools-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

@@ -1,0 +1,63 @@
+---
+import { tinaField } from '@tinacms/astro';
+
+interface Props {
+	project: any;
+}
+
+const { project } = Astro.props;
+
+const highlights = [
+	{ label: 'Client', value: project.metaClient },
+	{ label: 'Industry', value: project.metaIndustry },
+	{ label: 'Region', value: project.metaRegion },
+].filter((h) => h.value);
+---
+
+<span id="main-content" />
+
+<section class="pt-24 pb-16 max-[720px]:pt-16 max-[720px]:pb-12">
+	<p class="m-0 mb-[1.1rem] flex items-center flex-wrap gap-[0.55rem] font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">
+		<a
+			class="font-semibold text-[var(--foreground)] no-underline transition-opacity duration-[120ms] hover:opacity-[0.68] focus-visible:opacity-[0.68]"
+			href="/work"
+		>Case Study</a>
+		<span class="text-[var(--muted-foreground)]" aria-hidden="true">/</span>
+		<span>{project.name}</span>
+	</p>
+	<h1 class="display-title" data-tina-field={tinaField(project, 'caseTitle')}>{project.caseTitle ?? project.title}</h1>
+	<div class="grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] gap-8 mt-7 max-[980px]:grid-cols-1">
+		<p
+			class="text-[1.08rem] leading-[1.7] m-0 max-[720px]:text-[1.05rem]"
+			data-tina-field={tinaField(project, 'caseText')}
+		>{project.caseText ?? project.description}</p>
+	</div>
+</section>
+
+{highlights.length > 0 && (
+	<section class="grid grid-cols-3 gap-8 pt-6 pb-2 border-t border-[var(--border)] max-[980px]:grid-cols-1" id="overview">
+		{highlights.map((item) => (
+			<div class="pt-3">
+				<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)]">{item.label}</p>
+				<p class="mt-[0.35rem] mb-0 text-[1.15rem] font-bold">{item.value}</p>
+			</div>
+		))}
+	</section>
+)}
+
+{project.image && (
+	<section class="py-8 pb-16">
+		<img
+			class="w-full border border-[var(--border)] rounded-3xl shadow-[var(--shadow-large)]"
+			src={project.image}
+			alt={project.alt ?? project.name}
+			decoding="async"
+			loading="eager"
+		/>
+	</section>
+)}
+
+<section class="pt-12 pb-8 border-t border-[var(--border)]">
+	<p class="m-0 mb-3 font-mono text-[0.82rem] font-semibold tracking-[0.08em] uppercase text-[var(--muted-foreground)]">Case study updating</p>
+	<p class="m-0 text-[1.08rem] leading-[1.7] text-[var(--muted-foreground)] max-w-[42rem]">Full case study content coming soon. Check back shortly for the complete breakdown of process, design decisions, and outcomes.</p>
+</section>
