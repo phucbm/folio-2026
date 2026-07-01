@@ -1,10 +1,18 @@
 ---
+export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import { getHero, getProjects } from '../lib/content';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../tina/__generated__/client';
 
-const hero = getHero();
-const projects = getProjects();
+const heroRes = await requestWithMetadata(client.queries.hero({ relativePath: 'index.md' }));
+const hero = heroRes.data.hero;
+
+const projectsRes = await requestWithMetadata(client.queries.projectsConnection());
+const projects = (projectsRes.data.projectsConnection.edges ?? [])
+	.map((e: any) => e!.node!)
+	.sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0));
 ---
 
 <Layout
@@ -16,25 +24,27 @@ const projects = getProjects();
 	<div class="page">
 		<SiteHeader />
 
-		<main id="main-content">
+		<TinaIsland name="home" wrapper={{ tag: 'main', className: undefined }} primary>
+			<span id="main-content" />
+
 			<section class="hero" id="top">
 				<div class="hero-copy">
-					<h1 class="display-title">{hero.headline}</h1>
-					<p class="hero-text">{hero.subtext}</p>
-					<p class="hero-note" id="about">{hero.note}</p>
+					<h1 class="display-title" data-tina-field={tinaField(hero, 'headline')}>{hero.headline}</h1>
+					<p class="hero-text" data-tina-field={tinaField(hero, 'subtext')}>{hero.subtext}</p>
+					<p class="hero-note" id="about" data-tina-field={tinaField(hero, 'note')}>{hero.note}</p>
 				</div>
 			</section>
 
 			<section class="projects" id="work">
 				<div class="projects-grid">
 					{
-						projects.map((project, index) => (
+						projects.map((project: any, index: number) => (
 							<a class="project-link" href={`/work/${project.slug}`}>
 								<article class={`project-card ${project.background}`}>
 									<div class="project-header">
-										<p class="project-name">{project.name}</p>
+										<p class="project-name" data-tina-field={tinaField(project, 'name')}>{project.name}</p>
 									</div>
-									<h2 class="project-title">{project.title}</h2>
+									<h2 class="project-title" data-tina-field={tinaField(project, 'title')}>{project.title}</h2>
 
 									<div class={`project-visual ${project.variant}`}>
 										<img
@@ -51,8 +61,7 @@ const projects = getProjects();
 					}
 				</div>
 			</section>
-
-		</main>
+		</TinaIsland>
 	</div>
 </Layout>
 

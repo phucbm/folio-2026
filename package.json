@@ -28,8 +28,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^6.0.1",
-"@astrojs/sitemap": "^3.7.3",
+"@astrojs/mdx": "^6.0.1",
+    "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/manrope": "^5.2.8",
     "@tailwindcss/vite": "^4.3.0",
     "@tinacms/astro": "^0.5.0",

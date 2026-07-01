@@ -72,7 +72,7 @@ export default defineConfig({
         path: "content/hero",
         format: "md",
         match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false } },
+        ui: { allowedActions: { create: false, delete: false }, router: () => "/" },
         fields: [
           { type: "string", name: "headline", label: "Headline", ui: { component: "textarea" } },
           { type: "string", name: "subtext", label: "Subtext", ui: { component: "textarea" } },
@@ -87,7 +87,7 @@ export default defineConfig({
         path: "content/about",
         format: "md",
         match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false } },
+        ui: { allowedActions: { create: false, delete: false }, router: () => "/about" },
         fields: [
           { type: "string", name: "heroTitle", label: "Hero title", ui: { component: "textarea" } },
           { type: "string", name: "heroText", label: "Hero text", ui: { component: "textarea" } },
@@ -111,7 +111,7 @@ export default defineConfig({
         path: "content/resume",
         format: "md",
         match: { include: "index" },
-        ui: { allowedActions: { create: false, delete: false } },
+        ui: { allowedActions: { create: false, delete: false }, router: () => "/resume" },
         fields: [
           { type: "string", name: "heroTitle", label: "Hero title", ui: { component: "textarea" } },
           { type: "string", name: "heroText", label: "Hero text", ui: { component: "textarea" } },
@@ -171,6 +171,8 @@ export default defineConfig({
           { type: "rich-text", name: "body", label: "Case study content (optional)", isBody: true },
         ],
         ui: {
+          router: ({ document }: { document: { slug?: string } }) =>
+            document.slug ? `/work/${document.slug}` : "/work",
           filename: {
             readonly: false,
             slugify: (values: Record<string, string>) =>

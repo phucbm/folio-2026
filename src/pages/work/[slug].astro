@@ -1,20 +1,27 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import { siteConfig } from '../../config/site';
-import { getProjects } from '../../lib/content';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../../tina/__generated__/client';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const projects = getProjects();
-	return projects.map((project) => ({
+	const res = await client.queries.projectsConnection();
+	const projects = (res.data.projectsConnection.edges ?? [])
+		.map((e: any) => e!.node!)
+		.filter((p: any) => p.slug);
+	return projects.map((project: any) => ({
 		params: { slug: project.slug },
-		props: { project },
+		props: { relativePath: `${project.slug}.md` },
 	}));
 }
 
-const { project } = Astro.props;
+const { relativePath } = Astro.props;
+const projectRes = await requestWithMetadata(client.queries.projects({ relativePath }));
+const project = projectRes.data.projects;
 
 const highlights = [
 	{ label: 'Client', value: project.metaClient },
@@ -56,16 +63,18 @@ const caseStudySchema = [
 	<div class="case-page">
 		<SiteHeader />
 
-		<main id="main-content">
+		<TinaIsland name="project" wrapper={{ tag: 'main', className: undefined }} params={{ relativePath: `${project.slug}.md` }} primary>
+			<span id="main-content" />
+
 			<section class="case-hero">
 				<p class="eyebrow">
 					<a class="breadcrumb-link" href="/work">Case Study</a>
 					<span class="breadcrumb-separator" aria-hidden="true">/</span>
 					<span>{project.name}</span>
 				</p>
-				<h1 class="display-title">{project.caseTitle ?? project.title}</h1>
+				<h1 class="display-title" data-tina-field={tinaField(project, 'caseTitle')}>{project.caseTitle ?? project.title}</h1>
 				<div class="hero-subgrid">
-					<p class="hero-text">{project.caseText ?? project.description}</p>
+					<p class="hero-text" data-tina-field={tinaField(project, 'caseText')}>{project.caseText ?? project.description}</p>
 				</div>
 			</section>
 
@@ -96,7 +105,7 @@ const caseStudySchema = [
 				<p class="updating-label">Case study updating</p>
 				<p class="updating-text">Full case study content coming soon. Check back shortly for the complete breakdown of process, design decisions, and outcomes.</p>
 			</section>
-		</main>
+		</TinaIsland>
 	</div>
 </Layout>
 

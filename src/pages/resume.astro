@@ -1,9 +1,13 @@
 ---
+export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import { getResume } from '../lib/content';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../tina/__generated__/client';
 
-const resume = getResume();
+const resumeRes = await requestWithMetadata(client.queries.resume({ relativePath: 'index.md' }));
+const resume = resumeRes.data.resume;
 ---
 
 <Layout
@@ -15,12 +19,14 @@ const resume = getResume();
 	<div class="page">
 		<SiteHeader />
 
-		<main id="main-content">
+		<TinaIsland name="resume" wrapper={{ tag: 'main', className: undefined }} primary>
+			<span id="main-content" />
+
 			<section class="hero">
 				<p class="eyebrow">Resume</p>
-				<h1 class="display-title">{resume.heroTitle}</h1>
+				<h1 class="display-title" data-tina-field={tinaField(resume, 'heroTitle')}>{resume.heroTitle}</h1>
 				<div class="hero-subgrid">
-					<p class="hero-text">{resume.heroText}</p>
+					<p class="hero-text" data-tina-field={tinaField(resume, 'heroText')}>{resume.heroText}</p>
 				</div>
 			</section>
 
@@ -29,10 +35,10 @@ const resume = getResume();
 					<p class="section-kicker">Snapshot</p>
 				</div>
 				<div class="story-block">
-					<p><strong>Location:</strong> {resume.location}</p>
-					<p><strong>Focus:</strong> {resume.focus}</p>
-					<p><strong>Availability:</strong> {resume.availability}</p>
-					<p><strong>Contact:</strong> <a href={`mailto:${resume.contact}`}>{resume.contact}</a></p>
+					<p data-tina-field={tinaField(resume, 'location')}><strong>Location:</strong> {resume.location}</p>
+					<p data-tina-field={tinaField(resume, 'focus')}><strong>Focus:</strong> {resume.focus}</p>
+					<p data-tina-field={tinaField(resume, 'availability')}><strong>Availability:</strong> {resume.availability}</p>
+					<p data-tina-field={tinaField(resume, 'contact')}><strong>Contact:</strong> <a href={`mailto:${resume.contact}`}>{resume.contact}</a></p>
 				</div>
 			</section>
 
@@ -41,13 +47,13 @@ const resume = getResume();
 					<p class="section-kicker">Experience</p>
 				</div>
 				<div class="story-block">
-					{resume.experience?.map((exp) => (
+					{resume.experience?.map((exp: any) => (
 						<>
-							<p>
+							<p data-tina-field={tinaField(exp, 'role')}>
 								<strong>{exp.role} — {exp.company}</strong><br />
 								{exp.dates}
 							</p>
-							<p>{exp.body}</p>
+							<p data-tina-field={tinaField(exp, 'body')}>{exp.body}</p>
 						</>
 					))}
 				</div>
@@ -57,8 +63,8 @@ const resume = getResume();
 				<div class="section-rail">
 					<p class="section-kicker">Stack</p>
 				</div>
-				<div class="tags-grid">
-					{resume.stack?.map((item) => (
+				<div class="tags-grid" data-tina-field={tinaField(resume, 'stack')}>
+					{resume.stack?.map((item: string) => (
 						<span class="tag">{item}</span>
 					))}
 				</div>
@@ -68,14 +74,13 @@ const resume = getResume();
 				<div class="section-rail">
 					<p class="section-kicker">Clients</p>
 				</div>
-				<div class="tags-grid">
-					{resume.clients?.map((item) => (
+				<div class="tags-grid" data-tina-field={tinaField(resume, 'clients')}>
+					{resume.clients?.map((item: string) => (
 						<span class="tag">{item}</span>
 					))}
 				</div>
 			</section>
-
-		</main>
+		</TinaIsland>
 	</div>
 </Layout>
 

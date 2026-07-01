@@ -1,9 +1,13 @@
 ---
+export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import { getAbout } from '../lib/content';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../tina/__generated__/client';
 
-const about = getAbout();
+const aboutRes = await requestWithMetadata(client.queries.about({ relativePath: 'index.md' }));
+const about = aboutRes.data.about;
 ---
 
 <Layout
@@ -15,30 +19,32 @@ const about = getAbout();
 	<div class="page">
 		<SiteHeader />
 
-		<main id="main-content">
+		<TinaIsland name="about" wrapper={{ tag: 'main', className: undefined }} primary>
+			<span id="main-content" />
+
 			<section class="hero">
 				<p class="eyebrow">About</p>
 				<div class="hero-layout">
 					<div class="hero-copy">
-						<h1 class="display-title">{about.heroTitle}</h1>
-						<p class="hero-text">{about.heroText}</p>
+						<h1 class="display-title" data-tina-field={tinaField(about, 'heroTitle')}>{about.heroTitle}</h1>
+						<p class="hero-text" data-tina-field={tinaField(about, 'heroText')}>{about.heroText}</p>
 					</div>
 				</div>
 			</section>
 
-			{about.sections?.map((section) => (
+			{about.sections?.map((section: any) => (
 				<section class="editorial-section">
 					<div class="section-rail">
-						<p class="section-kicker">{section.kicker}</p>
+						<p class="section-kicker" data-tina-field={tinaField(section, 'kicker')}>{section.kicker}</p>
 					</div>
-					<div class="story-block">
+					<div class="story-block" data-tina-field={tinaField(section, 'body')}>
 						{section.body.split('\n\n').filter(Boolean).map((para: string) => (
 							<p>{para.trim()}</p>
 						))}
 					</div>
 				</section>
 			))}
-		</main>
+		</TinaIsland>
 	</div>
 </Layout>
 

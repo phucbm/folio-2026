@@ -1,12 +1,17 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
-import { getProjects } from '../../lib/content';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../../tina/__generated__/client';
 
 export const prerender = true;
 
 const workPageSize = 6;
-const projects = getProjects();
+const projectsRes = await requestWithMetadata(client.queries.projectsConnection());
+const projects = (projectsRes.data.projectsConnection.edges ?? [])
+	.map((e: any) => e!.node!)
+	.sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0));
 const page = 1;
 const totalPages = Math.ceil(projects.length / workPageSize);
 const visibleProjects = projects.slice(0, workPageSize);
@@ -21,7 +26,9 @@ const visibleProjects = projects.slice(0, workPageSize);
 	<div class="works-page">
 		<SiteHeader />
 
-		<main id="main-content" class="works-main">
+		<TinaIsland name="work" wrapper={{ tag: 'main', className: 'works-main' }} primary>
+			<span id="main-content" />
+
 			<header class="works-hero">
 				<p class="works-eyebrow">Selected work</p>
 				<h1>Projects built to make complex things feel clear, useful, and easier to trust.</h1>
@@ -29,12 +36,12 @@ const visibleProjects = projects.slice(0, workPageSize);
 
 			<section class="works-list" aria-label="Project list">
 				{
-					visibleProjects.map((project) => (
+					visibleProjects.map((project: any) => (
 						<article class="work-card">
 							<div class="work-copy">
-								<p class="work-name">{project.name}</p>
-								<h2>{project.title}</h2>
-								<p class="work-description">{project.description}</p>
+								<p class="work-name" data-tina-field={tinaField(project, 'name')}>{project.name}</p>
+								<h2 data-tina-field={tinaField(project, 'title')}>{project.title}</h2>
+								<p class="work-description" data-tina-field={tinaField(project, 'description')}>{project.description}</p>
 
 								<div class="actions">
 									<a href={`/work/${project.slug}`}>
@@ -77,7 +84,7 @@ const visibleProjects = projects.slice(0, workPageSize);
 						})
 				}
 			</nav>
-		</main>
+		</TinaIsland>
 	</div>
 </Layout>
 
