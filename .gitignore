@@ -25,4 +25,5 @@ pnpm-debug.log*
 .idea/
 
 node_modules
-tina/__generated__.wrangler/
+tina/__generated__
+.wrangler/
