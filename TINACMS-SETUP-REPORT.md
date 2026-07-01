@@ -14,7 +14,9 @@
 ```
 output: 'server'             CF Pages + @astrojs/cloudflare adapter (SSR)
 adapter: cloudflare()        @astrojs/cloudflare@13.7.0
-wrangler.toml                nodejs_compat flag (required for node:async_hooks in tinacms/astro)
+nodejs_compat                Set in CF Pages dashboard → Settings → Functions → Compatibility flags
+                             DO NOT add wrangler.toml — CF Pages redirects it to dist/server/wrangler.json
+                             which fails validation (cannot have both "main" and "pages_build_output_dir")
 TinaIsland on pages          Wraps editable content sections
 data-tina-field              On all editable elements
 requestWithMetadata()        On all SSR page queries
@@ -96,11 +98,17 @@ Fix: removed `prerender = true` from all content pages. Legal/404/robots keep pr
 ### Session 4 — restored SSR + fixed all build errors
 - Restored `islands.ts`, `tina-island/[name].ts`
 - Re-added `@astrojs/cloudflare@13.7.0`, `output: 'server'`
-- Added `wrangler.toml` with `nodejs_compat`
 - Inlined site config in `src/config/site.ts` (removed `node:fs` dep)
 - Migrated `work/page/[page].astro` to Tina client queries
 - Fixed `islands.ts` project fetch: `params.get('relativePath')` not `params.get('slug')`
 - Removed `export const prerender = true` from all content pages → sidebar now works
+- Set `nodejs_compat` in CF Pages dashboard (not via wrangler.toml)
+
+### Session 5 — fixed CF Pages deployment
+- Root cause: `wrangler.toml` present → CF Pages redirects to `dist/server/wrangler.json` → validation fails
+- `dist/server/wrangler.json` is a Worker config (`main`, `rules`) — CF Pages Pages validator rejects it when `pages_build_output_dir` added, and rejects ASSETS binding as reserved name
+- Fix: delete `wrangler.toml` entirely. CF Pages auto-detects Worker from adapter output.
+- `nodejs_compat` must be set in CF Pages dashboard, not via `wrangler.toml`
 
 ---
 
