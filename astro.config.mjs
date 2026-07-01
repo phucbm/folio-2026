@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import tailwindcss from '@tailwindcss/vite';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import { siteConfig } from './src/config/site.ts';
@@ -33,6 +32,6 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		plugins: [tailwindcss(), tinaAdminDevRedirect()],
+		plugins: [tinaAdminDevRedirect()],
 	},
 });
