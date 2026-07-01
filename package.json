@@ -24,6 +24,7 @@
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
     "build": "npx tinacms build && astro build",
+    "deploy": "pnpm run build && wrangler deploy",
     "preview": "astro preview",
     "astro": "astro"
   },
