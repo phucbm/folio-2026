@@ -42,6 +42,7 @@ export default defineConfig({
           { type: "string", name: "footerCtaBody", label: "Footer CTA body", ui: { component: "textarea" } },
           { type: "string", name: "authorName", label: "Author name" },
           { type: "string", name: "authorRole", label: "Author role" },
+          { type: "string", name: "footerCopyright", label: "Footer copyright text" },
           { type: "image", name: "ogImage", label: "OG image" },
           { type: "string", name: "keywords", label: "Keywords", list: true },
           {
@@ -135,6 +136,20 @@ export default defineConfig({
           },
           { type: "string", name: "stack", label: "Stack", list: true },
           { type: "string", name: "clients", label: "Clients", list: true },
+        ],
+      },
+
+      // ─── Work page (single doc) ─────────────────────────────────
+      {
+        name: "work",
+        label: "Work Page",
+        path: "content/work",
+        format: "md",
+        match: { include: "index" },
+        ui: { allowedActions: { create: false, delete: false }, router: () => "/work" },
+        fields: [
+          { type: "string", name: "eyebrow", label: "Eyebrow label" },
+          { type: "string", name: "headline", label: "Headline", ui: { component: "textarea" } },
         ],
       },
 

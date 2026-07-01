@@ -3,9 +3,10 @@ import { tinaField } from '@tinacms/astro';
 
 interface Props {
 	projects: any[];
+	workPage?: any;
 }
 
-const { projects } = Astro.props;
+const { projects, workPage } = Astro.props;
 const workPageSize = 6;
 const sorted = [...(projects ?? [])].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 const page = 1;
@@ -16,10 +17,14 @@ const visibleProjects = sorted.slice(0, workPageSize);
 <span id="main-content" />
 
 <header class="max-w-full pt-[4.5rem] max-[720px]:pt-16">
-	<p class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic">Selected work</p>
-	<h1 class="m-0 mt-4 font-extrabold tracking-[-0.05em] text-[var(--foreground)] text-[clamp(2.6rem,4.6vw,4.4rem)] leading-[1.03]">
-		Projects built to make complex things feel clear, useful, and easier to trust.
-	</h1>
+	<p
+		class="m-0 font-mono text-[0.82rem] font-semibold tracking-[0.08em] leading-[1.4] uppercase text-[var(--muted-foreground)] not-italic"
+		data-tina-field={workPage ? tinaField(workPage, 'eyebrow') : undefined}
+	>{workPage?.eyebrow ?? 'Selected work'}</p>
+	<h1
+		class="m-0 mt-4 font-extrabold tracking-[-0.05em] text-[var(--foreground)] text-[clamp(2.6rem,4.6vw,4.4rem)] leading-[1.03]"
+		data-tina-field={workPage ? tinaField(workPage, 'headline') : undefined}
+	>{workPage?.headline ?? 'Projects built to make complex things feel clear, useful, and easier to trust.'}</h1>
 </header>
 
 <section class="grid gap-6 mt-12" aria-label="Project list">

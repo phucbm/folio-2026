@@ -35,7 +35,7 @@ const site = siteRes.data.siteConfig;
 				}
 			</div>
 			<div class="shared-footer-note">
-				<p>&copy; {currentYear} {site.name}. All rights reserved.</p>
+				<p data-tina-field={tinaField(site, 'footerCopyright')}>{site.footerCopyright ?? `© ${currentYear} ${site.name}. All rights reserved.`}</p>
 			</div>
 		</div>
 	</div>
