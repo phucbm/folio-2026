@@ -1,47 +1,42 @@
 ---
-import { siteConfig } from '../config/site';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata, tinaField } from '@tinacms/astro';
+import client from '../../tina/__generated__/client';
 
 const { showCta = true } = Astro.props;
 const currentYear = new Date().getFullYear();
+
+const siteRes = await requestWithMetadata(client.queries.siteConfig({ relativePath: 'config.md' }));
+const site = siteRes.data.siteConfig;
 ---
 
-<footer class="shared-footer">
+<TinaIsland name="footer" wrapper={{ tag: 'footer', className: 'shared-footer' }}>
 	<div class:list={['shared-footer-inner', !showCta && 'shared-footer-inner-no-cta']}>
 		{
 			showCta && (
 				<div class="shared-footer-cta">
-					<h2>Got a project that needs motion and intelligence? Let's build it.</h2>
-					<p>
+					<h2 data-tina-field={tinaField(site, 'footerCtaHeadline')}>{site.footerCtaHeadline}</h2>
+					<p data-tina-field={tinaField(site, 'footerCtaBody')}>
 						Check my <a class="shared-footer-inline-link" href="/resume">resume</a> or reach out directly if something here sparked an idea.
 					</p>
-					<a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+					<a href={`mailto:${site.email}`} data-tina-field={tinaField(site, 'email')}>{site.email}</a>
 				</div>
 			)
 		}
 
 		<div class="shared-footer-meta">
-			<div class="shared-footer-links">
+			<div class="shared-footer-links" data-tina-field={tinaField(site, 'socialLinks')}>
 				{
-					siteConfig.socialLinks.map((link) => (
-						<a href={link.href} target="_blank" rel="noopener noreferrer">
+					site.socialLinks?.map((link: any) => (
+						<a href={link.href} target="_blank" rel="noopener noreferrer" data-tina-field={tinaField(link, 'label')}>
 							{link.label}
 						</a>
 					))
 				}
 			</div>
 			<div class="shared-footer-note">
-				{/* <div class="shared-footer-legal">
-					{siteConfig.legalLinks.map((link) => <a href={link.href}>{link.label}</a>)}
-					<button
-						class="footer-cookie-btn"
-						type="button"
-						onclick="window.dispatchEvent(new CustomEvent('phucbm:openCookieConsent'))"
-					>
-						Cookie Preferences
-					</button>
-				</div> */}
-				<p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
+				<p>&copy; {currentYear} {site.name}. All rights reserved.</p>
 			</div>
 		</div>
 	</div>
-</footer>
+</TinaIsland>

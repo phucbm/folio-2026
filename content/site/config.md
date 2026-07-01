@@ -1,8 +1,12 @@
 ---
 name: Phuc Bui
 title: Phuc Bui — Frontend Engineer
-description: Phuc Bui — Frontend Engineer based in Ho Chi Minh City. Running Perxel Studio, building OpenWallet.
+description: 'Phuc Bui — Frontend Engineer based in Ho Chi Minh City. Running Perxel Studio, building OpenWallet.'
 email: phucbm.dev@gmail.com
+footerCtaHeadline: |-
+  Got a project that needs motion and intelligence? 
+  Let's build it.
+footerCtaBody: 'Check my [resume](/resume) or reach out directly if something here sparked an idea.'
 authorName: Phuc Bui
 authorRole: Frontend Engineer
 ogImage: /og-image.png
@@ -23,12 +27,13 @@ navLinks:
   - href: /resume
     label: Resume
 socialLinks:
-  - href: https://github.com/phucbm
+  - href: 'https://github.com/phucbm'
     label: GitHub
-  - href: https://x.com/phucbm_
+  - href: 'https://x.com/phucbm_'
     label: X
-  - href: https://www.linkedin.com/in/phucbm/
+  - href: 'https://www.linkedin.com/in/phucbm/'
     label: LinkedIn
-  - href: https://discord.gg/9UFRcUZtPp
+  - href: 'https://discord.gg/9UFRcUZtPp'
     label: Discord
 ---
+

@@ -38,6 +38,8 @@ export default defineConfig({
           { type: "string", name: "title", label: "Meta title" },
           { type: "string", name: "description", label: "Meta description", ui: { component: "textarea" } },
           { type: "string", name: "email", label: "Email" },
+          { type: "string", name: "footerCtaHeadline", label: "Footer CTA headline", ui: { component: "textarea" } },
+          { type: "string", name: "footerCtaBody", label: "Footer CTA body", ui: { component: "textarea" } },
           { type: "string", name: "authorName", label: "Author name" },
           { type: "string", name: "authorRole", label: "Author role" },
           { type: "image", name: "ogImage", label: "OG image" },
