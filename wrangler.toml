@@ -1,0 +1,8 @@
+name = "phucbm-com-2026"
+main = "@astrojs/cloudflare/entrypoints/server"
+compatibility_date = "2025-05-21"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
