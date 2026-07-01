@@ -5,7 +5,7 @@ import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import { requestWithMetadata, tinaField } from '@tinacms/astro';
 import client from '../../../tina/__generated__/client';
 
-export const prerender = true;
+
 
 const workPageSize = 6;
 const projectsRes = await requestWithMetadata(client.queries.projectsConnection());

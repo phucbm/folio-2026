@@ -4,96 +4,119 @@
 
 - **Build**: passes locally and on CF Pages ✓
 - **Click-to-edit highlights**: visible in admin iframe ✓
-- **Sidebar fields on click**: empty — not working ✗
-- **Live iframe content reload**: not implemented ✗
+- **Sidebar fields on click**: working ✓
+- **Live iframe content reload on keystroke**: working ✓
+
+---
+
+## Final Architecture
+
+```
+output: 'server'             CF Pages + @astrojs/cloudflare adapter (SSR)
+adapter: cloudflare()        @astrojs/cloudflare@13.7.0
+wrangler.toml                nodejs_compat flag (required for node:async_hooks in tinacms/astro)
+TinaIsland on pages          Wraps editable content sections
+data-tina-field              On all editable elements
+requestWithMetadata()        On all SSR page queries
+src/lib/islands.ts           IslandRegistry for live reload route
+src/pages/tina-island/       SSR route: experimental_createIslandRoute
+@tailwindcss/postcss         Via postcss.config.mjs (not vite plugin)
+npx tinacms build            Generates schema/client before astro build
+```
+
+**Key constraint:** TinaCMS sidebar injection is gated in middleware:
+```ts
+if (context.isPrerendered) {
+  context.locals.tinaEdit = false;
+  return next(); // no form divs injected → sidebar empty
+}
+```
+All content pages must be SSR (`prerender` removed) for sidebar to work.
 
 ---
 
 ## Problem History
 
-### What we thought was the problem (wrong)
-Generated report (not from real logs) claimed `@astrojs/cloudflare@14` introduced `@cloudflare/vite-plugin` which set `ssr: true` causing `rollupOptions.input should not be an html file` error. This was inference, not from actual build output.
+### Real CF Pages build errors (2026-06-30)
 
-### What the real CF Pages build logs showed (2026-06-30)
-**Build 1 (c3a5d28):** `ERR_PNPM_OUTDATED_LOCKFILE` — lockfile had `@astrojs/node`, package.json didn't. Lockfile sync issue only.
+**Build 1 (c3a5d28):** `ERR_PNPM_OUTDATED_LOCKFILE` — lockfile had `@astrojs/node`, package.json didn't.
 
 **Build 2 (d764e5d):**
 ```
 ERROR: Branch 'main' is not on TinaCloud
 errorCode: 'ERR_CLOUD_CHECK_FAILED'
 ```
-`npx tinacms build` failed because TinaCloud hadn't indexed `main`. Unrelated to adapter or vite.
+`npx tinacms build` requires `main` branch indexed in TinaCloud dashboard.
 
-### What the actual local build error was (2026-07-01)
+### Local build errors (2026-07-01)
+
+**Error 1:**
 ```
-[@tailwindcss/vite:generate:build] Missing field `tsconfigPaths` on BindingViteResolvePluginConfig.resolveOptions
+[@tailwindcss/vite:generate:build] Missing field `tsconfigPaths`
 ```
-`@tailwindcss/vite@4.3.2` incompatible with `vite@8.1.1` (bundled in `astro@6.4.8`). Documented in [withastro/astro#16542](https://github.com/withastro/astro/issues/16542).
+`@tailwindcss/vite@4.3.2` incompatible with Vite 8 (bundled in astro@6.4.8).
+Fix: replaced with `@tailwindcss/postcss` via `postcss.config.mjs`.
+
+**Error 2:**
+```
+Error: No such module "node:fs"
+```
+`src/lib/content.ts` used `node:fs` with `readFileSync` — not available in CF Workers prerender sandbox (miniflare).
+Fix: inlined site config values in `src/config/site.ts`, migrated `work/page/[page].astro` to Tina client queries. Added `nodejs_compat` to `wrangler.toml`.
+
+**Error 3:**
+```
+Error: no such file or directory, readAll '/bundle/content/site/config.md'
+```
+miniflare bundles worker into `/bundle/` — `process.cwd()` resolves wrong path.
+Fix: already covered by inlining site config (no more `readFileSync`).
+
+**Root cause of empty sidebar:**
+Middleware skips form injection on prerendered pages. All content pages had `export const prerender = true` → `data-tina-form` divs never injected into `<head>` → bridge found no forms → sidebar empty.
+Fix: removed `prerender = true` from all content pages. Legal/404/robots keep prerender.
 
 ---
 
 ## Changes Made (chronological)
 
-### Session 1 — attempted visual editing setup
+### Session 1 — visual editing setup
 - Added `TinaIsland`, `data-tina-field`, `requestWithMetadata()` to all pages
-- Added `src/pages/tina-island/[name].ts` (SSR island route, `prerender = false`)
-- Added `src/lib/islands.ts` + `src/components/islands/` (custom registry)
+- Added `src/pages/tina-island/[name].ts` (SSR island route)
+- Added `src/lib/islands.ts` (IslandRegistry)
 - `astro.config.mjs`: `output: 'server'`, `@astrojs/cloudflare` adapter
 
-### Session 2 — removed experimental plumbing (based on wrong diagnosis)
-- Deleted `src/pages/tina-island/[name].ts`
-- Deleted `src/lib/islands.ts`
-- Deleted `src/components/islands/` (5 files)
-- `astro.config.mjs`: `output: 'static'`, removed adapter
-- `package.json`: removed `@astrojs/cloudflare`
+### Session 2 — removed plumbing (wrong diagnosis)
+- Deleted island route, registry, island components
+- Switched to `output: 'static'`, removed adapter
 
-### Session 3 — fixed actual build error (2026-07-01)
+### Session 3 — fixed Tailwind/Vite error
 - Replaced `@tailwindcss/vite` → `@tailwindcss/postcss`
 - Added `postcss.config.mjs`
-- Removed `tailwindcss()` from `astro.config.mjs` vite plugins
-- **Build now passes**
+
+### Session 4 — restored SSR + fixed all build errors
+- Restored `islands.ts`, `tina-island/[name].ts`
+- Re-added `@astrojs/cloudflare@13.7.0`, `output: 'server'`
+- Added `wrangler.toml` with `nodejs_compat`
+- Inlined site config in `src/config/site.ts` (removed `node:fs` dep)
+- Migrated `work/page/[page].astro` to Tina client queries
+- Fixed `islands.ts` project fetch: `params.get('relativePath')` not `params.get('slug')`
+- Removed `export const prerender = true` from all content pages → sidebar now works
 
 ---
 
-## Current Architecture
+## Pages: SSR vs Prerendered
 
-```
-output: 'static'           CF Pages serves dist/ natively, no adapter
-TinaIsland on pages        Wraps content sections
-data-tina-field            On all editable elements
-requestWithMetadata()      On all page queries
-npx tinacms build          Generates schema/client before astro build
-@tailwindcss/postcss       Via postcss.config.mjs (not vite plugin)
-```
-
----
-
-## Open Problem: Sidebar Empty on Click
-
-### What works
-Click-to-edit highlights appear (CSS/DOM via `data-tina-field`) — these need no server.
-
-### What doesn't work
-Clicking a highlight doesn't populate the sidebar form. Sidebar stays empty.
-
-### What the docs say is required
-From `tina.io/docs/frameworks/astro`: clicking a `tinaField()` element triggers the bridge → calls `src/pages/tina-island/[name].ts` → hydrates sidebar form from schema.
-
-### Why it's broken
-We deleted `src/pages/tina-island/[name].ts` in Session 2. That route is required for sidebar population. It needs `prerender = false` (SSR). Current `output: 'static'` cannot serve SSR routes.
-
-### The actual constraint
-`output: 'static'` on CF Pages = no SSR routes = no sidebar. This was the correct diagnosis we reached during investigation, but we only got there after making the wrong changes first.
-
----
-
-## Unresolved Decision
-
-To get sidebar working, need one of:
-1. SSR capable platform (the island route must be served dynamically)
-2. Keep `output: 'static'` + accept highlights-only (no sidebar)
-
-The original build errors (lockfile, TinaCloud branch not indexed, Tailwind/Vite mismatch) were **all separate from the SSR question**. Now that build passes, the SSR decision is the only remaining blocker for full visual editing.
+| Page | Mode | Reason |
+|------|------|--------|
+| `/` | SSR | TinaCMS editable |
+| `/about` | SSR | TinaCMS editable |
+| `/resume` | SSR | TinaCMS editable |
+| `/work` | SSR | TinaCMS editable |
+| `/work/[slug]` | SSR | TinaCMS editable |
+| `/work/page/[page]` | SSR | TinaCMS editable |
+| `/404` | prerender | static |
+| `/robots.txt` | prerender | static |
+| `/privacy`, `/terms`, `/cookies` | prerender | static |
 
 ---
 

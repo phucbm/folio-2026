@@ -1,32 +1,17 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
-import { getProjects } from '../../../lib/content';
+import client from '../../../../tina/__generated__/client';
 
-export const prerender = true;
-
-export function getStaticPaths() {
-	const workPageSize = 6;
-	const projects = getProjects();
-	const totalPages = Math.ceil(projects.length / workPageSize);
-
-	return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
-		const pageNumber = index + 2;
-		const start = (pageNumber - 1) * workPageSize;
-		const end = start + workPageSize;
-
-		return {
-			params: { page: String(pageNumber) },
-			props: {
-				page: pageNumber,
-				totalPages,
-				visibleProjects: projects.slice(start, end),
-			},
-		};
-	});
-}
-
-const { page, totalPages, visibleProjects } = Astro.props;
+const workPageSize = 6;
+const res = await client.queries.projectsConnection();
+const projects = (res.data.projectsConnection.edges ?? [])
+	.map((e: any) => e!.node!)
+	.sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0));
+const totalPages = Math.ceil(projects.length / workPageSize);
+const page = Number(Astro.params.page) || 1;
+const start = (page - 1) * workPageSize;
+const visibleProjects = projects.slice(start, start + workPageSize);
 ---
 
 <Layout

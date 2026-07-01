@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
+import cloudflare from '@astrojs/cloudflare';
 import { siteConfig } from './src/config/site.ts';
 
 const usingFallbackSiteUrl =
@@ -20,7 +21,8 @@ if (usingFallbackSiteUrl) {
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.siteUrl,
-	output: 'static',
+	output: 'server',
+	adapter: cloudflare(),
 	integrations: [
 		tina(),
 		mdx(),

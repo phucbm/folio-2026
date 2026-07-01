@@ -6,20 +6,8 @@ import { siteConfig } from '../../config/site';
 import { requestWithMetadata, tinaField } from '@tinacms/astro';
 import client from '../../../tina/__generated__/client';
 
-export const prerender = true;
-
-export async function getStaticPaths() {
-	const res = await client.queries.projectsConnection();
-	const projects = (res.data.projectsConnection.edges ?? [])
-		.map((e: any) => e!.node!)
-		.filter((p: any) => p.slug);
-	return projects.map((project: any) => ({
-		params: { slug: project.slug },
-		props: { relativePath: `${project.slug}.md` },
-	}));
-}
-
-const { relativePath } = Astro.props;
+const { slug } = Astro.params;
+const relativePath = `${slug}.md`;
 const projectRes = await requestWithMetadata(client.queries.projects({ relativePath }));
 const project = projectRes.data.projects;
 
