@@ -10,6 +10,9 @@ const config = JSON.parse(readFileSync(wranglerPath, 'utf-8'));
 // CF Pages requires this field to recognize the config as valid
 config.pages_build_output_dir = '../client';
 
+// CF Pages manages ASSETS binding itself — declaring it causes "reserved name" error
+delete config.assets;
+
 // Remove SESSION KV — not needed, session: false in adapter config doesn't strip it
 config.kv_namespaces = (config.kv_namespaces ?? []).filter(
 	(kv) => kv.binding !== 'SESSION'
