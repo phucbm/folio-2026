@@ -3,7 +3,7 @@
 [![Astro](https://img.shields.io/badge/Astro-6-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
 [![TinaCMS](https://img.shields.io/badge/TinaCMS-3-EC4815?style=for-the-badge&logo=tinacms&logoColor=white)](https://tina.io/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-84cc16?style=for-the-badge)](./LICENSE)
 
 **Live:** [phucbm.com](https://phucbm.com) · **Repo:** [github.com/phucbm/folio-2026](https://github.com/phucbm/folio-2026)
@@ -18,7 +18,7 @@ Portfolio starter combining Astro 6, TinaCMS visual editor, and Cloudflare Pages
 | CMS | TinaCMS (Git-backed, visual editor) |
 | Styles | Tailwind CSS 4 via Vite plugin |
 | Font | Manrope variable |
-| Hosting | Cloudflare Pages + Workers |
+| Hosting | Cloudflare Workers (`@astrojs/cloudflare`) |
 
 ## Features
 
@@ -31,7 +31,7 @@ Portfolio starter combining Astro 6, TinaCMS visual editor, and Cloudflare Pages
 - Cookie consent system with per-category opt-in
 - SEO: canonical URLs, Open Graph, Twitter cards, sitemap, `robots.txt`, JSON-LD
 - MDX support
-- Cloudflare Pages adapter with image passthrough
+- Cloudflare Workers adapter with image passthrough
 
 ## Getting Started
 
@@ -46,10 +46,10 @@ pnpm install
 ### 2. Set env vars
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
-Fill in `.env.local`:
+Fill in `.env`:
 
 ```env
 NEXT_PUBLIC_TINA_CLIENT_ID=   # from tina.io dashboard
@@ -110,19 +110,19 @@ Edit content:
 - **Dev:** `/admin` with local filesystem
 - **Production:** `/admin` with tina.io cloud
 
-## Cloudflare Pages Deployment
+## Cloudflare Workers Deployment
 
 ```bash
 pnpm deploy   # runs build + wrangler deploy
 ```
 
-Or connect the repo to Cloudflare Pages with:
+Or use `wrangler` directly:
 
-- **Build command:** `pnpm build`
-- **Output directory:** `dist`
-- **Node version:** `>=22.12.0`
+```bash
+wrangler deploy
+```
 
-Add env vars in the Cloudflare Pages dashboard.
+Config lives in [`wrangler.toml`](./wrangler.toml). Add env vars via `wrangler secret put` or in the Cloudflare dashboard under Workers → Settings → Variables.
 
 ## Customization
 

@@ -4,17 +4,18 @@ This file helps future coding agents and contributors work safely in this reposi
 
 ## Project Snapshot
 
-- Stack: Astro, Tailwind CSS 4, TypeScript, MDX.
-- Package manager: npm.
+- Stack: Astro 6 (SSR), TinaCMS, Tailwind CSS 4, TypeScript, MDX.
+- Package manager: pnpm.
 - Node requirement: `>=22.12.0`.
-- Output: static site build via Astro.
+- Output: Cloudflare Workers via `@astrojs/cloudflare` adapter.
 
 ## Common Commands
 
-- Install dependencies: `npm install`
-- Start local development: `npm run dev`
-- Build for production: `npm run build`
-- Preview the production build: `npm run preview`
+- Install dependencies: `pnpm install`
+- Start local development: `pnpm dev`
+- Build for production: `pnpm build`
+- Preview the production build: `pnpm preview`
+- Deploy to Cloudflare Workers: `pnpm deploy`
 
 ## Important Paths
 
