@@ -1,21 +1,22 @@
-# TinaCMS Setup Report
+# TinaCMS + Astro + Cloudflare Workers — Setup Guide
 
-## Current Status (2026-07-01) ✓ FULLY WORKING
+## Stack
 
-- **Build**: passes locally and on CF Workers ✓
-- **Click-to-edit highlights**: visible in admin iframe ✓
-- **Sidebar fields on click**: working ✓
-- **Live iframe DOM swap on keystroke**: working ✓
-- **Deployed site**: https://phucbm-com-2026.bmp.workers.dev ✓
+```
+TinaCMS        Content + visual editor (TinaCloud hosted)
+Astro          SSR via @astrojs/cloudflare@13.7.0 (NOT v14+)
+CF Workers     Deploy target (NOT CF Pages)
+GitHub Actions CI/CD — build + wrangler deploy on push to main
+```
 
 ---
 
-## Final Architecture
+## Architecture
 
 ```
-output: 'server'                    @astrojs/cloudflare adapter (SSR)
+output: 'server'                    SSR required for TinaCMS sidebar injection
 adapter: cloudflare()               @astrojs/cloudflare@13.7.0
-deploy target: CF Workers           NOT CF Pages — adapter no longer supports CF Pages
+deploy target: CF Workers           wrangler deploy
 wrangler.toml                       main = "@astrojs/cloudflare/entrypoints/server"
                                     assets.directory = "./dist"
                                     compatibility_flags = ["nodejs_compat"]
@@ -27,7 +28,7 @@ src/components/islands/             One .astro island component per page (pure T
 src/pages/tina-island/[name].ts    SSR route: experimental_createIslandRoute(islands)
 @tailwindcss/postcss                Via postcss.config.mjs (not vite plugin)
 npx tinacms build                   Generates schema/client before astro build
-npx wrangler deploy                 Deploys Worker + static assets together
+pnpm exec wrangler deploy           Deploys Worker + static assets together
 ```
 
 ### How live visual editing works
@@ -47,40 +48,7 @@ if (context.isPrerendered) {
 All content pages must be SSR (`prerender` removed) for sidebar to work.
 
 **Why pure Tailwind in island components:**
-Island HTML fragments are injected via DOM swap — Astro scoped styles (`data-astro-cid-*`) don't apply to swapped elements. Tailwind utility classes are global by definition and survive the swap. No `is:global` needed.
-
-**Why CF Workers not CF Pages:**
-`@astrojs/cloudflare` adapter docs explicitly state it no longer supports CF Pages.
-CF Pages rejects the adapter-generated `dist/server/wrangler.json` (reserved ASSETS binding,
-conflicting `main`/`pages_build_output_dir` fields). CF Workers deploys cleanly.
-
----
-
-## Island Registry
-
-| Island | Page | Fetches |
-|--------|------|---------|
-| `home` | `/` | hero + projectsConnection (parallel) |
-| `about` | `/about` | about |
-| `resume` | `/resume` | resume |
-| `work` | `/work` | projectsConnection |
-| `project` | `/work/[slug]` | projects (by relativePath param) |
-| `footer` | all pages | siteConfig |
-
----
-
-## wrangler.toml (final)
-
-```toml
-name = "phucbm-com-2026"
-main = "@astrojs/cloudflare/entrypoints/server"
-compatibility_date = "2025-05-21"
-compatibility_flags = ["nodejs_compat"]
-
-[assets]
-directory = "./dist"
-binding = "ASSETS"
-```
+Island HTML fragments are injected via DOM swap — Astro scoped styles (`data-astro-cid-*`) don't apply to swapped elements. Tailwind utility classes are global and survive the swap. No `is:global` needed.
 
 ---
 
@@ -100,74 +68,224 @@ binding = "ASSETS"
 
 ---
 
+## Island Registry
+
+| Island | Page | Fetches |
+|--------|------|---------|
+| `home` | `/` | hero + projectsConnection (parallel) |
+| `about` | `/about` | about |
+| `resume` | `/resume` | resume |
+| `work` | `/work` | projectsConnection |
+| `project` | `/work/[slug]` | projects (by relativePath param) |
+| `footer` | all pages | siteConfig |
+
+---
+
+## wrangler.toml
+
+```toml
+name = "phucbm-com-2026"
+main = "@astrojs/cloudflare/entrypoints/server"
+compatibility_date = "2025-05-21"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+```
+
+---
+
 ## Dev Commands
 
 ```bash
 pnpm dev              # tinacms dev -c "astro dev"
 pnpm build            # npx tinacms build && astro build
-npx wrangler deploy   # deploy to CF Workers
+pnpm exec wrangler deploy   # deploy to CF Workers (manual)
 ```
 
-## Required Env Vars (wrangler secrets or dashboard)
+---
+
+## Required Env Vars
+
+### CF Workers secrets (wrangler dashboard or `wrangler secret put`)
 
 - `TINA_TOKEN`
 - `NEXT_PUBLIC_TINA_CLIENT_ID`
 - `GITHUB_BRANCH` (optional, defaults to `main`)
-- `SITE_URL` or `PUBLIC_SITE_URL`
+
+### GitHub Actions secrets (repo Settings → Secrets)
+
+- `CLOUDFLARE_API_TOKEN` — CF token with Workers deploy permissions
+- `NEXT_PUBLIC_TINA_CLIENT_ID` — same as above
+- `TINA_TOKEN` — same as above
 
 ---
 
-## Problem History
+## CI/CD: GitHub Actions
 
-### Visual editing: live preview not working (2026-07-01)
+File: `.github/workflows/deploy.yml`
 
-**Root cause:** `component: null` in all `IslandRegistry` entries.
-`experimental_createIslandRoute` calls `container.renderToString(island.component, props)` — with `null` it returns 500, bridge gets no HTML, DOM never swaps.
+```yaml
+name: Deploy
 
-**Fix:**
-- Created `src/components/islands/` with one Astro component per island
-- Each component uses pure Tailwind (no scoped `<style>`) so styles survive DOM swap
-- Updated `islands.ts` to import and wire each component
-- Added missing `footer` island entry
-- Fixed `home` island to fetch both hero + projects in parallel (was only fetching hero)
-- Pages updated to use island components directly (DRY — same component for initial SSR and live swap)
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'content/**'
+      - 'public/**'
+      - '*.md'
 
-**Earlier wrong approach:** Used `is:global` style blocks in island components → styles leaked across all pages via shared class names (`.hero-text`, `.project-card`, etc.). Solution: convert all page styles to Tailwind utilities inside island components; delete all page-level `<style>` blocks.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-### CF Pages failures (2026-06-30 — 2026-07-01)
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-All CF Pages attempts failed due to fundamental incompatibility between adapter output and CF Pages validation:
-- CF Pages rejects `ASSETS` binding as reserved name
-- CF Pages rejects config with both `main` and `pages_build_output_dir`
-- CF Pages skips `wrangler.toml` without `pages_build_output_dir` → no Worker deployed → SSR 404
-- Without `wrangler.toml`, `nodejs_compat` not applied → `node:async_hooks` error
-- No clean path exists on CF Pages with this adapter version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
 
-### Local build errors (2026-07-01)
+      - run: pnpm install --frozen-lockfile
 
-**Error 1:**
+      - name: Deploy to Cloudflare Workers
+        run: pnpm run build && pnpm exec wrangler deploy
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_TINA_CLIENT_ID }}
+          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
 ```
-[@tailwindcss/vite:generate:build] Missing field `tsconfigPaths`
+
+**Why `paths-ignore`:** TinaCMS edits commit to `content/**`. Site is SSR — content fetched at request time from TinaCloud API, no redeploy needed for content changes.
+
+**Why `NODE_OPTIONS: --max_old_space_size=4096`:** Known TinaCMS bug ([#5689](https://github.com/tinacms/tinacms/issues/5689)) — `tinacms build` spikes past Node's default ~1.5GB heap on GH Actions runners. Locally fine because V8 auto-sizes heap to available RAM (Mac 16–32GB → ~4–8GB heap). CI runner has ~7GB total → V8 defaults to ~1.5GB → OOM.
+
+**Why `pnpm exec wrangler`:** `wrangler` is a devDependency. Bare `wrangler` command not in PATH on CI runners; `pnpm exec` resolves from `node_modules/.bin`.
+
+**Why `version: 10` on pnpm/action-setup:** Without it, action errors: `No pnpm version is specified`. Must set via `version` key or `packageManager` field in `package.json`.
+
+---
+
+## Visual Editor Setup
+
+### Step 1 — Add `ui.router` to every collection in `tina/config.ts`
+
+```ts
+// hero collection
+ui: { allowedActions: { create: false, delete: false }, router: () => '/' }
+
+// about collection
+ui: { allowedActions: { create: false, delete: false }, router: () => '/about' }
+
+// resume collection
+ui: { allowedActions: { create: false, delete: false }, router: () => '/resume' }
+
+// siteConfig collection
+ui: { allowedActions: { create: false, delete: false }, router: () => '/' }
+
+// projects collection
+ui: { router: ({ document }) => `/work/${document._sys.filename}` }
 ```
-`@tailwindcss/vite@4.3.2` incompatible with Vite 8 (bundled in astro@6.4.8).
-Fix: replaced with `@tailwindcss/postcss` via `postcss.config.mjs`.
 
-**Error 2:**
+### Step 2 — Island components
+
+`src/components/islands/` — one Astro component per page. Pure Tailwind only (no scoped `<style>`).
+
+```astro
+---
+import { tinaField } from '@tinacms/astro/tina-field';
+const { data } = Astro.props;
+---
+<h1 data-tina-field={tinaField(data, 'headline')}>{data.headline}</h1>
+<p data-tina-field={tinaField(data, 'subtext')}>{data.subtext}</p>
 ```
-Error: No such module "node:fs"
+
+Islands: `HeroIsland`, `AboutIsland`, `ResumeIsland`, `ProjectIsland`, `WorkIsland`, `FooterIsland`
+
+### Step 3 — Island registry (`src/lib/islands.ts`)
+
+```ts
+import type { IslandRegistry } from '@tinacms/astro/experimental';
+import HeroIsland from '../components/islands/HeroIsland.astro';
+// ... other imports
+
+export const islands: IslandRegistry = {
+  hero: {
+    fetch: () => client.queries.hero({ relativePath: 'index.md' }),
+    component: HeroIsland,
+    wrapper: { tag: 'section' },
+    propsFromData: (data) => ({ data: data.data?.hero }),
+  },
+  // ... other islands
+};
 ```
-`src/lib/content.ts` used `node:fs` with `readFileSync` — not available in CF Workers prerender sandbox (miniflare).
-Fix: inlined site config values in `src/config/site.ts`, migrated `work/page/[page].astro` to Tina client queries.
 
-**Root cause of empty sidebar:**
-Middleware skips form injection on prerendered pages. All content pages had `export const prerender = true` → `data-tina-form` divs never injected into `<head>` → bridge found no forms → sidebar empty.
-Fix: removed `prerender = true` from all content pages. Legal/404/robots keep prerender.
+### Step 4 — Island route (`src/pages/tina-island/[name].ts`)
 
-### CF adapter version constraint
+```ts
+import { experimental_createIslandRoute } from '@tinacms/astro/experimental';
+import { islands } from '../../lib/islands';
+export const { GET, POST } = experimental_createIslandRoute(islands);
+```
 
-`@astrojs/cloudflare@14` introduced `@cloudflare/vite-plugin` as its prerenderer. This plugin sets `ssr: true` on the Vite build config, causing Vite to throw:
+### Step 5 — Wrap pages with `<TinaIsland>`
+
+```astro
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import HeroIsland from '../components/islands/HeroIsland.astro';
+
+<TinaIsland name="hero" wrapper={islands.hero.wrapper} params={{}} primary>
+  <HeroIsland data={hero} />
+</TinaIsland>
+```
+
+### Step 6 — Register islands in `astro.config.mjs`
+
+```js
+import tina from '@tinacms/astro/integration';
+import { islands } from './src/lib/islands';
+
+tina({ islands })
+```
+
+---
+
+## Known Constraints
+
+### @astrojs/cloudflare version lock at 13.7.0
+
+v14 introduced `@cloudflare/vite-plugin` as prerenderer. Sets `ssr: true` on Vite build config → throws:
 ```
 rollupOptions.input should not be an html file when building for SSR.
 ```
-This fires when prerendered HTML pages coexist with any SSR route — including the `prerender = false` island endpoint TinaCMS requires.
-Fix: downgraded to `@astrojs/cloudflare@13.7.0`.
+Fires when prerendered HTML pages coexist with any SSR route (which TinaCMS island endpoint requires). Stay on v13.7.0.
+
+### CF Pages incompatible
+
+- CF Pages rejects `ASSETS` binding as reserved name
+- CF Pages rejects config with both `main` and `pages_build_output_dir`
+- Without `wrangler.toml`, `nodejs_compat` not applied → `node:async_hooks` error
+- No clean path on CF Pages with this adapter. Use CF Workers only.
+
+### @tailwindcss/vite incompatible
+
+`@tailwindcss/vite@4.3.2` incompatible with Vite 8 (bundled in astro@6.4.8):
+```
+[@tailwindcss/vite:generate:build] Missing field `tsconfigPaths`
+```
+Fix: use `@tailwindcss/postcss` via `postcss.config.mjs`.
+
+### node:fs unavailable in CF Workers prerender sandbox
+
+Files read via `node:fs` / `readFileSync` fail in miniflare. Use Tina client queries instead.
+
+### TinaCMS OOM in CI (open bug #5689)
+
+Memory spike after sourcemap regression. Workaround: `NODE_OPTIONS=--max_old_space_size=4096`. Not fixed upstream as of 2026-07-02.
