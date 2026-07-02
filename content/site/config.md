@@ -9,7 +9,7 @@ footerCtaHeadline: |-
 footerCtaBody: 'Check my [resume](/resume) or reach out directly if something here sparked an idea.'
 authorName: Phuc Bui
 authorRole: Frontend Engineer
-footerCopyright: '© 2026 Phuc Bui. All rights reserved.'
+footerCopyright: © 2026 Phuc Bui. All rights reserved.
 ogImage: /og-image.png
 keywords:
   - Phuc Bui
@@ -27,6 +27,8 @@ navLinks:
     label: About
   - href: /resume
     label: Resume
+  - href: /draft
+    label: Draft
 socialLinks:
   - href: 'https://github.com/phucbm'
     label: GitHub

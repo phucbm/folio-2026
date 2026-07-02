@@ -1,5 +1,12 @@
 ---
-import { siteConfig } from '../config/site';
+import { requestWithMetadata } from '@tinacms/astro';
+import client from '../../tina/__generated__/client';
+
+const siteRes = await requestWithMetadata(client.queries.siteConfig({ relativePath: 'config.md' }));
+const siteConfig = {
+	...siteRes.data.siteConfig,
+	extraPages: (siteRes.data.siteConfig as any).extraPages ?? [],
+};
 const currentPath = Astro.url.pathname || '/';
 const mobileMenuPanelId = 'shared-mobile-menu-panel';
 ---
