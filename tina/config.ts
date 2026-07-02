@@ -128,7 +128,7 @@ export default defineConfig({
         path: "content/site",
         format: "md",
         match: { include: "config" },
-        ui: { allowedActions: { create: false, delete: false } },
+        ui: { global: true, allowedActions: { create: false, delete: false } },
         fields: [
           { type: "string", name: "name", label: "Site name" },
           { type: "string", name: "title", label: "Meta title" },
