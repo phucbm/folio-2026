@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import SiteFooter from '../components/SiteFooter.astro';
 import { siteConfig } from '../config/site';
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 
 const {
 	title = siteConfig.title,
@@ -84,7 +84,7 @@ const schemaData =
 			crossorigin
 		/>
 		<title>{title}</title>
-		<ViewTransitions />
+		<ClientRouter />
 		<!-- <link rel="stylesheet" href="/cookie-consent.css" /> -->
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)}></script>
 		<script is:inline>
