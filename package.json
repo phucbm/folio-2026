@@ -1,22 +1,22 @@
 {
-  "name": "maria-astro-theme",
-  "description": "A clean Astro portfolio theme for UX designers and product designers.",
+  "name": "phucbm-folio-2026",
+  "description": "Astro 6 + TinaCMS + Cloudflare Pages portfolio starter with visual editing and Git-backed content.",
   "type": "module",
-  "version": "1.0.3",
-  "author": "Andrei Alba",
+  "version": "1.0.0",
+  "author": "Phuc Bui <phucbm.dev@gmail.com>",
   "license": "MIT",
   "keywords": [
-    "astro-theme",
     "astro",
+    "tinacms",
+    "cloudflare-pages",
     "portfolio",
-    "ux",
-    "designer",
+    "starter",
     "tailwindcss"
   ],
-  "homepage": "https://maria-lake.vercel.app/",
+  "homepage": "https://phucbm.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andreialba/maria.git"
+    "url": "https://github.com/phucbm/folio-2026.git"
   },
   "engines": {
     "node": ">=22.12.0"

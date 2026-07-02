@@ -1,221 +1,199 @@
-# Maria - Astro Theme for UI/UX and Product Designers
+# phucbm-folio-2026
 
-[![Maria theme preview](https://raw.githubusercontent.com/andreialba/maria/main/public/screenshot.webp)](https://maria-lake.vercel.app/)
-
-[![Astro 6](https://img.shields.io/badge/Astro-6-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
-[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Configured-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Astro](https://img.shields.io/badge/Astro-6-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
+[![TinaCMS](https://img.shields.io/badge/TinaCMS-3-EC4815?style=for-the-badge&logo=tinacms&logoColor=white)](https://tina.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-84cc16?style=for-the-badge)](./LICENSE)
 
-**Preview:** [maria-lake.vercel.app](https://maria-lake.vercel.app/)
+**Live:** [phucbm.com](https://phucbm.com) · **Repo:** [github.com/phucbm/folio-2026](https://github.com/phucbm/folio-2026)
 
-Maria is a clean Astro portfolio theme for UI/UX designers, product designers, and visual product thinkers.
+Portfolio starter combining Astro 6, TinaCMS visual editor, and Cloudflare Pages deployment. Content is edited live in the browser via TinaCMS and committed back to Git — no database required.
 
-It includes:
+## Stack
 
-- a polished portfolio homepage
-- a dedicated Works page with pagination
-- a sample case study page
-- About and Resume pages
-- light and dark mode with a persistent header icon toggle
-- cookie consent banner with saved preferences and a footer re-open action
-- self-hosted tool logos on the Resume page
-- Privacy, Terms, and 404 pages
-- a dedicated Cookie Policy page
-- shared header/footer/navigation
-- Astro-optimized responsive portfolio images
+| Layer | Tech |
+|---|---|
+| Framework | Astro 6 (SSR, Cloudflare adapter) |
+| CMS | TinaCMS (Git-backed, visual editor) |
+| Styles | Tailwind CSS 4 via Vite plugin |
+| Font | Manrope variable |
+| Hosting | Cloudflare Pages + Workers |
+
+## Features
+
+- Visual CMS editing via TinaCMS (`/admin`)
+- Git-backed content — no database, no API keys for content
+- Block-based pages (Hero, Editorial, Snapshot, Experience, Pill List, Project Cards)
+- Work/projects collection with case study pages
+- Site-wide config (name, nav, social links, OG image) via CMS
+- Light/dark mode with `localStorage` persistence
+- Cookie consent system with per-category opt-in
+- SEO: canonical URLs, Open Graph, Twitter cards, sitemap, `robots.txt`, JSON-LD
 - MDX support
-- sitemap generation
-- Open Graph and Twitter meta tags
-- structured data defaults
-- Netlify and Vercel config
-
-## Tech Stack
-
-- Astro 6
-- Tailwind CSS 4 via Vite plugin
-- MDX
-- `@fontsource-variable/manrope`
+- Cloudflare Pages adapter with image passthrough
 
 ## Getting Started
 
-```bash
-npm install
-npm run dev
-```
-
-Build for production:
+### 1. Clone
 
 ```bash
-npm run build
+git clone https://github.com/phucbm/folio-2026.git
+cd folio-2026
+pnpm install
 ```
 
-Preview the production build locally:
+### 2. Set env vars
 
 ```bash
-npm run preview
+cp .env.example .env.local
 ```
 
-## Template Setup
+Fill in `.env.local`:
 
-The main template settings live in:
+```env
+NEXT_PUBLIC_TINA_CLIENT_ID=   # from tina.io dashboard
+TINA_TOKEN=                   # from tina.io dashboard
+SITE_URL=https://your-domain.com
+```
 
-- [src/config/site.ts](./src/config/site.ts)
+`SITE_URL` (or `PUBLIC_SITE_URL`) controls canonical URLs, sitemap, and `robots.txt`. Skip it and the default `phucbm.com` URL is used — set it before deploying.
 
-Update this file before publishing:
+### 3. Dev server
 
-- `name`
-- `title`
-- `description`
-- `email`
-- `authorName`
-- `authorRole`
-- social links
+```bash
+pnpm dev
+```
 
-Set your production domain with an environment variable before publishing:
+Opens Astro dev server with TinaCMS local mode. Visit `/admin` to edit content.
 
-- `SITE_URL=https://your-domain.com`
-- or `PUBLIC_SITE_URL=https://your-domain.com`
+### 4. Build
 
-This keeps canonical URLs, `robots.txt`, and the sitemap aligned without editing source for each environment.
+```bash
+pnpm build
+```
 
-## SEO
+### 5. Preview
 
-The template includes:
+```bash
+pnpm preview
+```
 
-- canonical URLs
-- meta descriptions
-- keyword meta
-- Open Graph tags
-- Twitter card tags
-- sitemap generation
-- dynamic `robots.txt`
-- JSON-LD structured data defaults
-- `noindex` handling for the 404 page
+## TinaCMS Setup
 
-Main SEO files:
+TinaCMS runs in two modes:
 
-- [src/layouts/Layout.astro](./src/layouts/Layout.astro)
-- [astro.config.mjs](./astro.config.mjs)
-- [src/pages/robots.txt.ts](./src/pages/robots.txt.ts)
-- [public/og-image.svg](./public/og-image.svg)
+| Mode | Command | Data source |
+|---|---|---|
+| Local | `pnpm dev` | Local filesystem |
+| Cloud | production | tina.io cloud (Git sync) |
 
-## Cookies and Consent
+To enable cloud editing (needed for non-dev deployments):
 
-The theme includes a client-side cookie consent system with:
+1. Create a project at [tina.io](https://tina.io)
+2. Copy `Client ID` and `Token`
+3. Add as env vars (see above)
 
-- a bottom banner for first visit consent
-- a preferences modal with essential, analytics, and marketing categories
-- saved consent in `localStorage` under `maria-cookie-consent`
-- a footer `Cookie Preferences` button for reopening the modal
-- a `Cookies` policy page at `/cookies`
+Schema lives in [`tina/config.ts`](./tina/config.ts).
 
-The theme also saves the visitor's color theme in `localStorage` under `maria-theme`.
+## Content Structure
 
-### How consent works
+```
+content/
+├── site/         # Global site config (name, nav, social links)
+├── pages/        # Block-based pages (home, about, resume, etc.)
+├── projects/     # Work case studies
+├── posts/        # Blog posts (optional)
+```
 
-- Essential storage is always active because it remembers theme and consent choices.
-- Analytics and marketing are optional categories and default to off until the visitor opts in.
-- The consent UI works out of the box even if you have not connected analytics or marketing tools yet.
+Edit content:
+- **Dev:** `/admin` with local filesystem
+- **Production:** `/admin` with tina.io cloud
 
-### Client API
+## Cloudflare Pages Deployment
 
-The consent script exposes `window.mariaCookieConsent` in the browser:
+```bash
+pnpm deploy   # runs build + wrangler deploy
+```
+
+Or connect the repo to Cloudflare Pages with:
+
+- **Build command:** `pnpm build`
+- **Output directory:** `dist`
+- **Node version:** `>=22.12.0`
+
+Add env vars in the Cloudflare Pages dashboard.
+
+## Customization
+
+### Site identity
+
+Edit [`src/config/site.ts`](./src/config/site.ts) for local defaults, or update via TinaCMS at `content/site/config.md`.
+
+Key fields: `name`, `title`, `description`, `email`, `authorName`, `authorRole`, `navLinks`, `socialLinks`.
+
+### Pages and blocks
+
+Pages live in `content/pages/`. Each page is a stack of blocks:
+
+- **Hero** — eyebrow, h1, body, note
+- **Editorial** — kicker label + rich text
+- **Snapshot** — location, focus, availability, contact
+- **Experience** — job list (role, company, dates, description)
+- **Pill List** — labeled tag group
+- **Project Cards / Project List** — pulls from `content/projects/`
+
+### Work projects
+
+Add a file to `content/projects/`. Set `slug` → creates `/work/{slug}` route automatically.
+
+### Colors and typography
+
+Tailwind config lives inline in [`src/styles/`](./src/styles/). Font is Manrope variable via `@fontsource-variable/manrope`.
+
+## Env Vars Reference
+
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_TINA_CLIENT_ID` | Cloud only | TinaCMS project client ID |
+| `TINA_TOKEN` | Cloud only | TinaCMS read token |
+| `SITE_URL` | Recommended | Production URL for SEO metadata |
+| `PUBLIC_SITE_URL` | Alternative | Same as `SITE_URL` (public prefix) |
+
+## Cookie Consent
+
+Built-in consent system (no third-party library):
+
+- Bottom banner on first visit
+- Per-category opt-in (essential / analytics / marketing)
+- Saved to `localStorage` under `maria-cookie-consent`
+- Footer button to reopen preferences
+
+Browser API:
 
 ```js
-window.mariaCookieConsent.getConsent();
-window.mariaCookieConsent.hasConsent();
-window.mariaCookieConsent.canUse('analytics');
-window.mariaCookieConsent.canUse('marketing');
-window.mariaCookieConsent.openPreferences();
+window.mariaCookieConsent.getConsent()
+window.mariaCookieConsent.canUse('analytics')
+window.mariaCookieConsent.openPreferences()
+
+window.addEventListener('maria:cookieConsentChanged', (e) => {
+  if (e.detail.analytics) { /* load analytics */ }
+})
 ```
-
-Whenever a visitor updates their preferences, the site dispatches:
-
-```js
-window.addEventListener('maria:cookieConsentChanged', (event) => {
-  console.log(event.detail);
-});
-```
-
-### Hooking in analytics or marketing scripts
-
-Only load optional third-party scripts after checking consent. Example:
-
-```html
-<script>
-  if (window.mariaCookieConsent?.canUse('analytics')) {
-    // load your analytics script here
-  }
-
-  window.addEventListener('maria:cookieConsentChanged', (event) => {
-    if (event.detail.analytics) {
-      // load or re-enable analytics here
-    }
-  });
-</script>
-```
-
-If you add a new provider, also update:
-
-- [src/pages/cookies.astro](./src/pages/cookies.astro)
-- [src/pages/privacy.astro](./src/pages/privacy.astro)
-- banner/modal copy in [public/cookie-consent.js](./public/cookie-consent.js)
-
-## Content and Pages
-
-Theme behavior:
-
-- the site respects the visitor's system color scheme by default
-- the header includes an icon-only theme toggle for switching between light and dark mode
-- the selected theme is saved in `localStorage`
-
-Main pages:
-
-- `/`
-- `/about`
-- `/resume`
-- `/work`
-- `/work/nextpoint`
-- `/privacy`
-- `/cookies`
-- `/terms`
-- `/404`
-
-At the moment, `Nextpoint` is the only fully built case study page in the theme. The other homepage project cards intentionally point to `/work/nextpoint` as placeholders until you add their own case study pages.
-
-## Images and Assets
-
-Portfolio images live in:
-
-- [src/assets/images](./src/assets/images)
-
-Tool logos live in:
-
-- [src/assets/logos](./src/assets/logos)
-
-Notes:
-
-- Portfolio and case study screenshots use Astro's image pipeline for responsive optimized output.
-- Tool logos are self-hosted SVGs.
-- `public/` is reserved for files that should be served as-is, such as favicons and the Open Graph image.
-- Cookie consent assets live in [public/cookie-consent.js](./public/cookie-consent.js) and [public/cookie-consent.css](./public/cookie-consent.css).
-
-## Deployment
-
-Included config:
-
-- [netlify.toml](./netlify.toml)
-- [vercel.json](./vercel.json)
-
-If you only deploy to one platform, delete the other config file before wiring up CI so platform auto-detection stays predictable.
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+MIT — see [LICENSE](./LICENSE).
 
-## Notes
+---
 
-- Replace the example project copy and images with your own work.
-- Set `SITE_URL` or `PUBLIC_SITE_URL` before deploying so SEO URLs do not point to the demo domain.
-- The social share image is a template default and can be replaced with your own branded preview.
+## Credits
+
+Based on [Maria](https://github.com/andreialba/maria) by [Andrei Alba](https://github.com/andreialba), licensed MIT.
+
+Additions in this fork:
+- TinaCMS integration (visual editor, Git-backed content)
+- Cloudflare Pages deployment (`@astrojs/cloudflare` adapter, `wrangler`)
+- Block-based page system via TinaCMS schema
+- Dynamic `[slug].astro` routing for CMS-managed pages
+- Nav links sourced from TinaCMS site config
