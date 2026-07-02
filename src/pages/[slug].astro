@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import TinaIsland from '@tinacms/astro/TinaIsland.astro';
+import { requestWithMetadata } from '@tinacms/astro';
+import PageIsland from '../components/islands/PageIsland.astro';
+import client from '../../tina/__generated__/client';
+
+const { slug } = Astro.params;
+const relativePath = `${slug}.md`;
+
+let pageRes;
+try {
+	pageRes = await requestWithMetadata(client.queries.pages({ relativePath }));
+} catch {
+	return Astro.redirect('/404');
+}
+
+const page = pageRes.data.pages;
+if (!page) return Astro.redirect('/404');
+---
+
+<Layout
+	title={page.metaTitle ?? page.title}
+	description={page.metaDescription ?? ''}
+>
+	<a class="skip-link" href="#main-content">Skip to content</a>
+
+	<div class="relative w-[min(calc(100%-3rem),78rem)] mx-auto py-5 pb-20 max-[720px]:w-[min(calc(100%-1.5rem),78rem)] max-[720px]:pt-4">
+		<SiteHeader />
+
+		<TinaIsland name="pages" wrapper={{ tag: 'main', className: undefined }} params={{ relativePath }} primary>
+			<PageIsland page={page} />
+		</TinaIsland>
+	</div>
+</Layout>

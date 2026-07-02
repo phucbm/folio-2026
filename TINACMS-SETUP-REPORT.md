@@ -62,9 +62,18 @@ Island HTML fragments are injected via DOM swap — Astro scoped styles (`data-a
 | `/work` | SSR | TinaCMS editable |
 | `/work/[slug]` | SSR | TinaCMS editable |
 | `/work/page/[page]` | SSR | TinaCMS editable |
+| `/[slug]` | SSR | Dynamic route for all `pages` collection docs |
 | `/404` | prerender | static |
 | `/robots.txt` | prerender | static |
 | `/privacy`, `/terms`, `/cookies` | prerender | static |
+
+### Rule: New `pages` collection docs → no new Astro file needed
+
+`src/pages/[slug].astro` handles all `content/pages/*.md` docs dynamically. The `slug` field in the frontmatter drives the URL (e.g. `slug: draft` → `/draft`). The route reads `params.slug` + `.md` → queries TinaCloud → 404 redirect if doc not found.
+
+**Do NOT** create a new `src/pages/<name>.astro` for new pages collection documents. Create the doc in TinaCMS admin (or `content/pages/<name>.md`) with a `slug` field — the dynamic route handles it automatically.
+
+**Exception:** Pages that need custom Astro layout (e.g. `/work` with pagination, `/` with hero) keep their own dedicated `.astro` file. The `[slug].astro` route coexists — Astro static routes take priority over dynamic ones.
 
 ---
 
