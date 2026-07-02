@@ -22,7 +22,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Deploy to Cloudflare Workers
-        run: pnpm run build && wrangler deploy
+        run: pnpm run build && pnpm exec wrangler deploy
         env:
           NODE_OPTIONS: --max_old_space_size=4096
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
