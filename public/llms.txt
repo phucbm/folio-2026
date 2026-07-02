@@ -1,0 +1,21 @@
+# Phuc Bui — Frontend Engineer
+
+Personal portfolio of Phuc Bui, a Frontend Engineer based in Ho Chi Minh City.
+
+## About
+
+Phuc Bui builds motion-rich websites and web applications. He runs Perxel Studio and is building OpenWallet. Specializes in GSAP animations, Next.js, and modern frontend development.
+
+## Pages
+
+- `/` — Home
+- `/work` — Portfolio and projects
+- `/about` — About Phuc Bui
+- `/resume` — Resume and experience
+
+## Contact
+
+- Email: phucbm.dev@gmail.com
+- GitHub: https://github.com/phucbm
+- X: https://x.com/phucbm_
+- LinkedIn: https://www.linkedin.com/in/phucbm/
