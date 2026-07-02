@@ -23,29 +23,32 @@
   },
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
-    "build": "npx tinacms build && astro build",
+    "build": "tinacms build --content=local && astro build",
     "deploy": "pnpm run build && wrangler deploy",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "13.7.0",
     "@astrojs/mdx": "^6.0.1",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/manrope": "^5.2.8",
-    "@tailwindcss/postcss": "^4.3.2",
     "@tinacms/astro": "^0.5.0",
     "astro": "^6.4.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.3.0",
-    "tinacms": "^3.9.3",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@tailwindcss/vite": "^4.3.2",
     "@tinacms/cli": "^2.5.1",
     "@types/node": "^26.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tinacms": "^3.9.4",
+    "typescript": "^6.0.3",
     "wrangler": "^4.106.0"
   }
 }

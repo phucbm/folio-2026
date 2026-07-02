@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
+import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 import { siteConfig } from './src/config/site.ts';
 
@@ -34,6 +35,6 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		plugins: [tinaAdminDevRedirect()],
+		plugins: [tinaAdminDevRedirect(), tailwindcss()],
 	},
 });
